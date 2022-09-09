@@ -8,7 +8,7 @@ import (
 
 type PlayerService interface {
 	CreatePlayer(command dto.PlayerCommand) (*dto.PlayerDTO, *errors.AppError)
-	FindByEmail(string) ([]dto.PlayerDTO, *errors.AppError)
+	ExistsByEmail(string) (bool, *errors.AppError)
 }
 
 type PlayerServiceImpl struct {
@@ -18,11 +18,14 @@ type PlayerServiceImpl struct {
 func (ps PlayerServiceImpl) CreatePlayer(pc dto.PlayerCommand) (*dto.PlayerDTO, *errors.AppError) {
 	p := domain.Player{}.FromCommand(pc)
 
-	existingPlayers, err := ps.FindByEmail(pc.Email)
-	if existingPlayers != nil && len(existingPlayers) != 0 {
+	playerExists, err := ps.ExistsByEmail(pc.Email)
+	if err != nil {
+		return nil, err
+	}
+	if playerExists {
 		return nil, errors.NewConflictError(map[string]string{
 			"error-code": "error.username-already-taken",
-			"error-arg":  "pero.peric@ag04.com",
+			"error-arg":  pc.Email,
 		})
 	}
 
@@ -36,18 +39,13 @@ func (ps PlayerServiceImpl) CreatePlayer(pc dto.PlayerCommand) (*dto.PlayerDTO, 
 	return &resp, nil
 }
 
-func (ps PlayerServiceImpl) FindByEmail(email string) ([]dto.PlayerDTO, *errors.AppError) {
-	players, err := ps.repo.FindByEmail(email)
+func (ps PlayerServiceImpl) ExistsByEmail(email string) (bool, *errors.AppError) {
+	exists, err := ps.repo.ExistsByEmail(email)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 
-	resp := make([]dto.PlayerDTO, 0)
-	for _, p := range players {
-		resp = append(resp, p.ToDTO())
-	}
-
-	return resp, nil
+	return exists, nil
 }
 
 func NewPlayerService(repo domain.PlayerRepository) PlayerService {

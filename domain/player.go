@@ -28,5 +28,5 @@ func (p Player) ToDTO() dto.PlayerDTO {
 
 type PlayerRepository interface {
 	Save(Player) (*Player, *errors.AppError)
-	FindByEmail(string) ([]Player, *errors.AppError)
+	ExistsByEmail(string) (bool, *errors.AppError)
 }

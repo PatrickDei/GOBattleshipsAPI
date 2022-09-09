@@ -27,22 +27,18 @@ func (pr PlayerRepositoryImpl) Save(p Player) (*Player, *errors.AppError) {
 	return &p, nil
 }
 
-func (pr PlayerRepositoryImpl) FindByEmail(email string) ([]Player, *errors.AppError) {
-	selectStatement := "SELECT * FROM Players WHERE Email = ?"
+func (pr PlayerRepositoryImpl) ExistsByEmail(email string) (bool, *errors.AppError) {
+	selectStatement := "SELECT 1 FROM Players WHERE Email = ?"
 
-	p := make([]Player, 0)
-	err := pr.dbClient.Select(&p, selectStatement, email)
+	var exists bool
+	err := pr.dbClient.QueryRow(selectStatement, email).Scan(&exists)
 
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, errors.NewNotFoundError(map[string]string{"Message": "User not found"})
-		} else {
-			logger.Error("Error while scanning user: " + err.Error())
-			return nil, errors.NewInternalServerError(map[string]string{"Message": "User not found"})
-		}
+	if err != nil && err != sql.ErrNoRows {
+		logger.Error("Error while checking if player with email exists: " + err.Error())
+		return false, errors.NewInternalServerError(map[string]string{"Message": "User not found"})
 	}
 
-	return p, nil
+	return exists, nil
 }
 
 func extractId(r sql.Result) int64 {

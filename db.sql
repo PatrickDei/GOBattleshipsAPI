@@ -1,0 +1,8 @@
+CREATE DATABASE Battleships;
+USE Battleships;
+
+CREATE TABLE Players (
+    Id int AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    Name VARCHAR(25) NOT NULL,
+    Email VARCHAR(50) NOT NULL
+);

@@ -26,6 +26,7 @@ func (p Player) ToDTO() dto.PlayerDTO {
 	}
 }
 
+//go:generate mockgen -destination=../mocks/domain/mock_player_repository.go -package=domain -source=player.go PlayerRepository
 type PlayerRepository interface {
 	Save(Player) (*Player, *errors.AppError)
 	ExistsByEmail(string) (bool, *errors.AppError)

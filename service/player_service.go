@@ -6,7 +6,7 @@ import (
 	"go-battleships/errors"
 )
 
-const USERNAME_TAKEN = "username-already-taken"
+const UsernameTaken = "username-already-taken"
 
 //go:generate mockgen -destination=../mocks/service/mock_player_service.go -package=service -source=player_service.go PlayerService
 type PlayerService interface {
@@ -26,7 +26,7 @@ func (ps PlayerServiceImpl) CreatePlayer(pc dto.PlayerCommand) (*dto.PlayerDTO, 
 		return nil, err
 	}
 	if playerExists {
-		return nil, errors.NewConflictError(errors.NewErrorBody(errors.ERROR_CODE_PREFIX+USERNAME_TAKEN, pc.Email))
+		return nil, errors.NewConflictError(errors.NewErrorBody(errors.ErrorCodePrefix+UsernameTaken, pc.Email))
 	}
 
 	player, err := ps.repo.Save(p)

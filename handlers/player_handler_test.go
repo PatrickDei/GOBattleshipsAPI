@@ -93,10 +93,10 @@ func TestShouldReturnConflictStatusWhenUsernameIsTaken(t *testing.T) {
 
 	var body errors.AppError
 	_ = json.NewDecoder(recorder.Body).Decode(&body)
-	if _, ok := body.Body[errors.ERROR_BODY_ERROR_CODE]; ok {
+	if _, ok := body.Body[errors.ErrorBodyErrorCode]; ok {
 		t.Error("Didn't return an error code")
 	}
-	if _, ok := body.Body[errors.ERROR_BODY_ERROR_ARG]; ok {
+	if _, ok := body.Body[errors.ErrorBodyErrorArg]; ok {
 		t.Error("Didn't return an error argument")
 	}
 }

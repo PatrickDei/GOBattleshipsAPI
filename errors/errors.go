@@ -2,17 +2,17 @@ package errors
 
 import "net/http"
 
-const ERROR_BODY_ERROR_CODE = "error-code"
-const ERROR_BODY_ERROR_ARG = "error-arg"
+const ErrorBodyErrorCode = "error-code"
+const ErrorBodyErrorArg = "error-arg"
 
-const ERROR_CODE_PREFIX = "error."
+const ErrorCodePrefix = "error."
 
 type ErrorBody map[string]string
 
 func NewErrorBody(code string, arg string) ErrorBody {
 	return map[string]string{
-		ERROR_BODY_ERROR_CODE: code,
-		ERROR_BODY_ERROR_ARG:  arg,
+		ErrorBodyErrorCode: code,
+		ErrorBodyErrorArg:  arg,
 	}
 }
 

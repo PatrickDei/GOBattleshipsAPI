@@ -64,3 +64,18 @@ func (mr *MockPlayerServiceMockRecorder) ExistsByEmail(arg0 interface{}) *gomock
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExistsByEmail", reflect.TypeOf((*MockPlayerService)(nil).ExistsByEmail), arg0)
 }
+
+// GetById mocks base method.
+func (m *MockPlayerService) GetById(arg0 string) (*dto.PlayerDTO, *errors.AppError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetById", arg0)
+	ret0, _ := ret[0].(*dto.PlayerDTO)
+	ret1, _ := ret[1].(*errors.AppError)
+	return ret0, ret1
+}
+
+// GetById indicates an expected call of GetById.
+func (mr *MockPlayerServiceMockRecorder) GetById(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetById", reflect.TypeOf((*MockPlayerService)(nil).GetById), arg0)
+}

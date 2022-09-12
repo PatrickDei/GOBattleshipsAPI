@@ -28,6 +28,15 @@ func (pr PlayerRepositoryImpl) Save(p Player) (*Player, *errors.AppError) {
 	return &p, nil
 }
 
+func extractId(r sql.Result) int64 {
+	id, err := r.LastInsertId()
+	if err != nil {
+		logger.Error("Error while extracting new id")
+	}
+
+	return id
+}
+
 func (pr PlayerRepositoryImpl) ExistsByEmail(email string) (bool, *errors.AppError) {
 	selectStatement := "SELECT 1 FROM Players WHERE Email = ?"
 
@@ -42,13 +51,20 @@ func (pr PlayerRepositoryImpl) ExistsByEmail(email string) (bool, *errors.AppErr
 	return exists, nil
 }
 
-func extractId(r sql.Result) int64 {
-	id, err := r.LastInsertId()
-	if err != nil {
-		logger.Error("Error while extracting new id")
-	}
+func (pr PlayerRepositoryImpl) GetById(id string) (*Player, *errors.AppError) {
+	selectStatement := "SELECT * FROM Players WHERE Id = ?"
 
-	return id
+	var p Player
+	err := pr.dbClient.Get(&p, selectStatement, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.NewNotFoundError(nil)
+		} else {
+			logger.Error("Error while reading player")
+			return nil, errors.NewInternalServerError(map[string]string{"error": "An unexpected error occurred"})
+		}
+	}
+	return &p, nil
 }
 
 func NewPlayerRepository(dbClient *sqlx.DB) PlayerRepository {

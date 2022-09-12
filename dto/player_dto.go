@@ -1,7 +1,7 @@
 package dto
 
 type PlayerDTO struct {
-	Id    string
+	Id    string `json:",omitempty"`
 	Name  string
 	Email string
 }

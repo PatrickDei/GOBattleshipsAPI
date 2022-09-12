@@ -26,7 +26,7 @@ func (ps PlayerServiceImpl) CreatePlayer(pc dto.PlayerCommand) (*dto.PlayerDTO, 
 		return nil, err
 	}
 	if playerExists {
-		return nil, errors.NewConflictError(errors.NewErrorBody(errors.ErrorCodePrefix+UsernameTaken, pc.Email))
+		return nil, errors.NewConflictError(errors.NewErrorBody(UsernameTaken, pc.Email))
 	}
 
 	player, err := ps.repo.Save(p)

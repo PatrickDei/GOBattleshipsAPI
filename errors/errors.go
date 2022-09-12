@@ -5,13 +5,13 @@ import "net/http"
 const ErrorBodyErrorCode = "error-code"
 const ErrorBodyErrorArg = "error-arg"
 
-const ErrorCodePrefix = "error."
+const errorCodePrefix = "error."
 
 type ErrorBody map[string]string
 
 func NewErrorBody(code string, arg string) ErrorBody {
 	return map[string]string{
-		ErrorBodyErrorCode: code,
+		ErrorBodyErrorCode: errorCodePrefix + code,
 		ErrorBodyErrorArg:  arg,
 	}
 }

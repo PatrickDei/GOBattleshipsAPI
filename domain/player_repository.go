@@ -18,6 +18,7 @@ func (pr PlayerRepositoryImpl) Save(p Player) (*Player, *errors.AppError) {
 	result, err := pr.dbClient.Exec(insertStatement, p.Name, p.Email)
 	if err != nil {
 		logger.Error("Error while creating player")
+		return nil, errors.NewInternalServerError(map[string]string{"error": "An unexpected error occurred"})
 	}
 
 	id := extractId(result)

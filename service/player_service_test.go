@@ -2,6 +2,8 @@ package service
 
 import (
 	"github.com/golang/mock/gomock"
+	realdomain "go-battleships/domain"
+	realdto "go-battleships/dto"
 	"go-battleships/errors"
 	"go-battleships/mocks/domain"
 	"testing"
@@ -9,6 +11,10 @@ import (
 
 var mockRepo *domain.MockPlayerRepository
 var ps PlayerService
+var pc = realdto.PlayerCommand{
+	Name:  "name",
+	Email: "email",
+}
 
 func setup(t *testing.T) func() {
 	ctrl := gomock.NewController(t)
@@ -50,5 +56,48 @@ func TestExistsByEmailReturnsRepositoryError(t *testing.T) {
 
 	if _, err := ps.ExistsByEmail(email); err == nil {
 		t.Error("Repository returned error but service didn't pass it")
+	}
+}
+
+func TestCreatePlayerPassesInternalServerError(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	mockRepo.EXPECT().ExistsByEmail(pc.Email).Return(false, errors.NewInternalServerError(errors.NewErrorBody("code", "arg")))
+
+	if _, err := ps.CreatePlayer(pc); err == nil {
+		t.Error("Repository returned error but service didn't pass it")
+	}
+
+	mockRepo.EXPECT().ExistsByEmail(pc.Email).Return(false, nil)
+	mockRepo.EXPECT().Save(gomock.Any()).Return(nil, errors.NewInternalServerError(errors.NewErrorBody("code", "arg")))
+
+	if _, err := ps.CreatePlayer(pc); err == nil {
+		t.Error("Repository returned error but service didn't pass it")
+	}
+}
+
+func TestCreatePlayerThrowsConflictWhenPlayerExists(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	mockRepo.EXPECT().ExistsByEmail(pc.Email).Return(true, nil)
+
+	if _, err := ps.CreatePlayer(pc); err == nil {
+		t.Error("Player exists but no conflict was thrown")
+	}
+}
+
+func TestCreatePlayerReturnsDTOAfterSave(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	p := realdomain.Player{}.FromCommand(pc)
+
+	mockRepo.EXPECT().ExistsByEmail(pc.Email).Return(false, nil)
+	mockRepo.EXPECT().Save(p).Return(&p, nil)
+
+	if dto, err := ps.CreatePlayer(pc); dto == nil || *dto != p.ToDTO() || err != nil {
+		t.Error("Player created but an error was returned")
 	}
 }

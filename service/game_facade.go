@@ -10,11 +10,18 @@ type GameFacade interface {
 }
 
 type GameFacadeImpl struct {
-	gameService GameService
+	gameService   GameService
+	playerService PlayerService
 }
 
 func (gf GameFacadeImpl) ChallengeOpponent(playerId string, opponentId string) (*dto.GameDTO, *errors.AppError) {
-	// checks for existence
+	if exists, err := gf.playerExistsById(playerId); exists != true {
+		return nil, err
+	}
+
+	if exists, err := gf.playerExistsById(opponentId); exists != true {
+		return nil, err
+	}
 
 	g, err := gf.gameService.CreateGame(playerId, opponentId)
 	if err != nil {
@@ -26,6 +33,16 @@ func (gf GameFacadeImpl) ChallengeOpponent(playerId string, opponentId string) (
 	return &resp, nil
 }
 
-func NewGameFacade(s GameService) GameFacade {
-	return GameFacadeImpl{gameService: s}
+func (gf GameFacadeImpl) playerExistsById(id string) (bool, *errors.AppError) {
+	if exists, err := gf.playerService.ExistsById(id); exists != true || err != nil {
+		if err != nil {
+			return false, err
+		}
+		return false, errors.NewNotFoundError(errors.NewErrorBody("unknown-user-id", id))
+	}
+	return true, nil
+}
+
+func NewGameFacade(s GameService, p PlayerService) GameFacade {
+	return GameFacadeImpl{gameService: s, playerService: p}
 }

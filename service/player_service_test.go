@@ -106,7 +106,7 @@ func TestGetAllReturnsPlayers(t *testing.T) {
 	teardown := setup(t)
 	defer teardown()
 
-	mockRepo.EXPECT().GetAll().Return([]realdto.PlayerDTO{
+	mockRepo.EXPECT().GetAll().Return([]realdomain.Player{
 		{
 			Name:  "john",
 			Email: "doe@mail.com",

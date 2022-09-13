@@ -38,13 +38,21 @@ func extractId(r sql.Result) int64 {
 }
 
 func (pr PlayerRepositoryImpl) ExistsByEmail(email string) (bool, *errors.AppError) {
-	selectStatement := "SELECT 1 FROM Players WHERE Email = ?"
+	return pr.existsByColumn("Email", email)
+}
+
+func (pr PlayerRepositoryImpl) ExistsById(id string) (bool, *errors.AppError) {
+	return pr.existsByColumn("Id", id)
+}
+
+func (pr PlayerRepositoryImpl) existsByColumn(column string, value string) (bool, *errors.AppError) {
+	selectStatement := "SELECT 1 FROM Players WHERE " + column + " = ?"
 
 	var exists bool
-	err := pr.dbClient.QueryRow(selectStatement, email).Scan(&exists)
+	err := pr.dbClient.QueryRow(selectStatement, value).Scan(&exists)
 
 	if err != nil && err != sql.ErrNoRows {
-		logger.Error("Error while checking if player with email exists: " + err.Error())
+		logger.Error("Error while checking if player with " + column + " exists: " + err.Error())
 		return false, errors.NewInternalServerError(map[string]string{"Message": "User not found"})
 	}
 

@@ -12,6 +12,7 @@ const UsernameTaken = "username-already-taken"
 type PlayerService interface {
 	CreatePlayer(command dto.PlayerCommand) (*dto.PlayerDTO, *errors.AppError)
 	ExistsByEmail(string) (bool, *errors.AppError)
+	GetById(string) (*dto.PlayerDTO, *errors.AppError)
 }
 
 type PlayerServiceImpl struct {
@@ -46,6 +47,13 @@ func (ps PlayerServiceImpl) ExistsByEmail(email string) (bool, *errors.AppError)
 	}
 
 	return exists, nil
+}
+
+func (ps PlayerServiceImpl) GetById(id string) (*dto.PlayerDTO, *errors.AppError) {
+	p, err := ps.repo.GetById(id)
+	pdto := p.ToDTO()
+	pdto.Id = ""
+	return &pdto, err
 }
 
 func NewPlayerService(repo domain.PlayerRepository) PlayerService {

@@ -93,3 +93,26 @@ func TestSaveReturnsRuntimeError(t *testing.T) {
 		t.Error("An error occurred when querying the database but it wasn't thrown")
 	}
 }
+
+/*
+func TestGetByIdReturnsPlayer(t *testing.T) {
+	mock, teardown := setup()
+	defer teardown()
+
+	id := "1"
+	p := Player{
+		Id:    id,
+		Name:  "John",
+		Email: "doe@mail.com",
+	}
+
+	mock.ExpectPrepare("^SELECT (.+) FROM Players").ExpectQuery().WithArgs(id).WillReturnRows(
+		sqlmock.NewRows([]string{"id"}).AddRow(1))
+
+	pa, _ := pr.GetById(id)
+	fmt.Printf("%+v", pa)
+	if player, err := pr.GetById(id); player.Id != p.Id || err != nil {
+		t.Error("The method didn't return the requested Id")
+	}
+}
+*/

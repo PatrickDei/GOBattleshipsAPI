@@ -116,3 +116,25 @@ func TestGetByIdReturnsPlayer(t *testing.T) {
 	}
 }
 */
+func TestGetAllReturnsPlayers(t *testing.T) {
+	mock, teardown := setup()
+	defer teardown()
+
+	mock.ExpectQuery("SELECT Name, Email FROM Players").WillReturnRows(
+		sqlmock.NewRows([]string{"Name", "Email"}).AddRow("John", "Doe"))
+
+	if _, err := pr.GetAll(); err != nil {
+		t.Error("Database returned rows but repo returned error")
+	}
+}
+
+func TestGetAllThrowsError(t *testing.T) {
+	mock, teardown := setup()
+	defer teardown()
+
+	mock.ExpectQuery("SELECT Name, Email FROM Players").WillReturnError(sql.ErrTxDone)
+
+	if _, err := pr.GetAll(); err == nil {
+		t.Error("Database returned error but repo didn't")
+	}
+}

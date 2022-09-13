@@ -43,6 +43,15 @@ func (ph PlayerHandler) GetPlayer(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (ph PlayerHandler) GetAllPlayers(w http.ResponseWriter, r *http.Request) {
+	players, err := ph.Service.GetAll()
+	if err != nil {
+		writeResponse(w, err.Code, err.AsResponseMessage())
+	} else {
+		writeResponse(w, http.StatusOK, players)
+	}
+}
+
 func writeResponse(w http.ResponseWriter, code int, data interface{}) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(code)

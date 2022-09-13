@@ -14,6 +14,7 @@ type PlayerService interface {
 	ExistsByEmail(string) (bool, *errors.AppError)
 	GetById(string) (*dto.PlayerDTO, *errors.AppError)
 	GetAll() ([]dto.PlayerDTO, *errors.AppError)
+	ExistsById(string) (bool, *errors.AppError)
 }
 
 type PlayerServiceImpl struct {
@@ -42,16 +43,18 @@ func (ps PlayerServiceImpl) CreatePlayer(pc dto.PlayerCommand) (*dto.PlayerDTO, 
 }
 
 func (ps PlayerServiceImpl) ExistsByEmail(email string) (bool, *errors.AppError) {
-	exists, err := ps.repo.ExistsByEmail(email)
-	if err != nil {
-		return false, err
-	}
+	return ps.repo.ExistsByEmail(email)
+}
 
-	return exists, nil
+func (ps PlayerServiceImpl) ExistsById(id string) (bool, *errors.AppError) {
+	return ps.repo.ExistsById(id)
 }
 
 func (ps PlayerServiceImpl) GetById(id string) (*dto.PlayerDTO, *errors.AppError) {
 	p, err := ps.repo.GetById(id)
+	if err != nil {
+		return nil, err
+	}
 	pdto := p.ToDTO()
 	pdto.Id = ""
 	return &pdto, err

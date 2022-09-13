@@ -28,23 +28,22 @@ func (pr PlayerRepositoryImpl) Save(p Player) (*Player, *errors.AppError) {
 	return &p, nil
 }
 
-func extractId(r sql.Result) int64 {
-	id, err := r.LastInsertId()
-	if err != nil {
-		logger.Error("Error while extracting new id")
-	}
-
-	return id
+func (pr PlayerRepositoryImpl) ExistsByEmail(email string) (bool, *errors.AppError) {
+	return pr.existsByColumn("Email", email)
 }
 
-func (pr PlayerRepositoryImpl) ExistsByEmail(email string) (bool, *errors.AppError) {
-	selectStatement := "SELECT 1 FROM Players WHERE Email = ?"
+func (pr PlayerRepositoryImpl) ExistsById(id string) (bool, *errors.AppError) {
+	return pr.existsByColumn("Id", id)
+}
+
+func (pr PlayerRepositoryImpl) existsByColumn(column string, value string) (bool, *errors.AppError) {
+	selectStatement := "SELECT 1 FROM Players WHERE " + column + " = ?"
 
 	var exists bool
-	err := pr.dbClient.QueryRow(selectStatement, email).Scan(&exists)
+	err := pr.dbClient.QueryRow(selectStatement, value).Scan(&exists)
 
 	if err != nil && err != sql.ErrNoRows {
-		logger.Error("Error while checking if player with email exists: " + err.Error())
+		logger.Error("Error while checking if player with " + column + " exists: " + err.Error())
 		return false, errors.NewInternalServerError(map[string]string{"Message": "User not found"})
 	}
 
@@ -52,7 +51,7 @@ func (pr PlayerRepositoryImpl) ExistsByEmail(email string) (bool, *errors.AppErr
 }
 
 func (pr PlayerRepositoryImpl) GetById(id string) (*Player, *errors.AppError) {
-	selectStatement := "SELECT * FROM Players WHERE Id = ?"
+	selectStatement := "SELECT Name, Email FROM Players WHERE Id = ?"
 
 	var p Player
 	err := pr.dbClient.Get(&p, selectStatement, id)

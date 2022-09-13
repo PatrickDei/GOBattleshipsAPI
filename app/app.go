@@ -22,13 +22,15 @@ func Start() {
 	router := mux.NewRouter()
 
 	dbClient := getDbClient()
-	ph := handlers.PlayerHandler{
-		Service: service.NewPlayerService(domain.NewPlayerRepository(dbClient)),
-	}
+	ps := service.NewPlayerService(domain.NewPlayerRepository(dbClient))
+	ph := handlers.PlayerHandler{Service: ps}
+	gh := handlers.GameHandler{Facade: service.NewGameFacade(service.NewGameService(domain.NewGameRepository(dbClient)), ps)}
 
 	router.HandleFunc("/player", ph.CreatePlayer).Methods(http.MethodPost)
 	router.HandleFunc("/player/list", ph.GetAllPlayers).Methods(http.MethodGet)
 	router.HandleFunc("/player/{"+handlers.PlayerPathParam+"}", ph.GetPlayer).Methods(http.MethodGet)
+
+	router.HandleFunc("/player/{"+handlers.OpponentPathParam+"}/game", gh.ChallengePlayer).Methods(http.MethodPost)
 
 	address := os.Getenv(constants.ServerAddressEnv)
 	port := os.Getenv(constants.ServerPortEnv)

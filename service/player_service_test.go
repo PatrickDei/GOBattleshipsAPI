@@ -9,37 +9,79 @@ import (
 	"testing"
 )
 
-var mockRepo *domain.MockPlayerRepository
+var mockPlayerRepo *domain.MockPlayerRepository
 var ps PlayerService
 var pc = realdto.PlayerCommand{
 	Name:  "name",
 	Email: "email",
 }
 
-func setup(t *testing.T) func() {
+func playerSetup(t *testing.T) func() {
 	ctrl := gomock.NewController(t)
-	mockRepo = domain.NewMockPlayerRepository(ctrl)
+	mockPlayerRepo = domain.NewMockPlayerRepository(ctrl)
 
-	ps = PlayerServiceImpl{repo: mockRepo}
+	ps = PlayerServiceImpl{repo: mockPlayerRepo}
 
 	return func() {
 		defer ctrl.Finish()
 	}
 }
 
+func TestGetByIdReturnsPlayer(t *testing.T) {
+	teardown := playerSetup(t)
+	defer teardown()
+
+	id := "1"
+	player := realdomain.Player{
+		Id:    "1",
+		Name:  "John",
+		Email: "Doe@mail.com",
+	}
+
+	mockPlayerRepo.EXPECT().GetById(id).Return(&player, nil)
+
+	p, err := ps.GetById(id)
+	if err != nil {
+		t.Error("Repo returned player but service returned error")
+	}
+	if p.Id != "" {
+		t.Error("Service delivered Id from the db")
+	}
+	if p.Name == "" || p.Email == "" {
+		t.Error("Not all data delivered from the database was delivered")
+	}
+}
+
+func TestGetByIdReturnsError(t *testing.T) {
+	teardown := playerSetup(t)
+	defer teardown()
+
+	id := "1"
+
+	mockPlayerRepo.EXPECT().GetById(id).Return(nil, errors.NewInternalServerError(errors.NewErrorBody("code", "arg")))
+
+	p, err := ps.GetById(id)
+	if err == nil {
+		t.Error("Repo returned error but service didn't")
+	}
+	if p != nil {
+		t.Error("Repo returned nil for player but service didn't")
+	}
+}
+
 func TestExistsByEmailReturnsRepositoryResponse(t *testing.T) {
-	teardown := setup(t)
+	teardown := playerSetup(t)
 	defer teardown()
 
 	email := "pperic@mail.com"
 
-	mockRepo.EXPECT().ExistsByEmail(email).Return(true, nil)
+	mockPlayerRepo.EXPECT().ExistsByEmail(email).Return(true, nil)
 
 	if exists, _ := ps.ExistsByEmail(email); exists != true {
 		t.Error("Repository returned true but service returned false")
 	}
 
-	mockRepo.EXPECT().ExistsByEmail(email).Return(false, nil)
+	mockPlayerRepo.EXPECT().ExistsByEmail(email).Return(false, nil)
 
 	if exists, _ := ps.ExistsByEmail(email); exists != false {
 		t.Error("Repository returned false but service returned true")
@@ -47,12 +89,12 @@ func TestExistsByEmailReturnsRepositoryResponse(t *testing.T) {
 }
 
 func TestExistsByEmailReturnsRepositoryError(t *testing.T) {
-	teardown := setup(t)
+	teardown := playerSetup(t)
 	defer teardown()
 
 	email := "pperic@mail.com"
 
-	mockRepo.EXPECT().ExistsByEmail(email).Return(false, errors.NewInternalServerError(errors.NewErrorBody("code", "arg")))
+	mockPlayerRepo.EXPECT().ExistsByEmail(email).Return(false, errors.NewInternalServerError(errors.NewErrorBody("code", "arg")))
 
 	if _, err := ps.ExistsByEmail(email); err == nil {
 		t.Error("Repository returned error but service didn't pass it")
@@ -60,17 +102,17 @@ func TestExistsByEmailReturnsRepositoryError(t *testing.T) {
 }
 
 func TestCreatePlayerPassesInternalServerError(t *testing.T) {
-	teardown := setup(t)
+	teardown := playerSetup(t)
 	defer teardown()
 
-	mockRepo.EXPECT().ExistsByEmail(pc.Email).Return(false, errors.NewInternalServerError(errors.NewErrorBody("code", "arg")))
+	mockPlayerRepo.EXPECT().ExistsByEmail(pc.Email).Return(false, errors.NewInternalServerError(errors.NewErrorBody("code", "arg")))
 
 	if _, err := ps.CreatePlayer(pc); err == nil {
 		t.Error("Repository returned error but service didn't pass it")
 	}
 
-	mockRepo.EXPECT().ExistsByEmail(pc.Email).Return(false, nil)
-	mockRepo.EXPECT().Save(gomock.Any()).Return(nil, errors.NewInternalServerError(errors.NewErrorBody("code", "arg")))
+	mockPlayerRepo.EXPECT().ExistsByEmail(pc.Email).Return(false, nil)
+	mockPlayerRepo.EXPECT().Save(gomock.Any()).Return(nil, errors.NewInternalServerError(errors.NewErrorBody("code", "arg")))
 
 	if _, err := ps.CreatePlayer(pc); err == nil {
 		t.Error("Repository returned error but service didn't pass it")
@@ -78,10 +120,10 @@ func TestCreatePlayerPassesInternalServerError(t *testing.T) {
 }
 
 func TestCreatePlayerThrowsConflictWhenPlayerExists(t *testing.T) {
-	teardown := setup(t)
+	teardown := playerSetup(t)
 	defer teardown()
 
-	mockRepo.EXPECT().ExistsByEmail(pc.Email).Return(true, nil)
+	mockPlayerRepo.EXPECT().ExistsByEmail(pc.Email).Return(true, nil)
 
 	if _, err := ps.CreatePlayer(pc); err == nil {
 		t.Error("Player exists but no conflict was thrown")
@@ -89,13 +131,13 @@ func TestCreatePlayerThrowsConflictWhenPlayerExists(t *testing.T) {
 }
 
 func TestCreatePlayerReturnsDTOAfterSave(t *testing.T) {
-	teardown := setup(t)
+	teardown := playerSetup(t)
 	defer teardown()
 
 	p := realdomain.Player{}.FromCommand(pc)
 
-	mockRepo.EXPECT().ExistsByEmail(pc.Email).Return(false, nil)
-	mockRepo.EXPECT().Save(p).Return(&p, nil)
+	mockPlayerRepo.EXPECT().ExistsByEmail(pc.Email).Return(false, nil)
+	mockPlayerRepo.EXPECT().Save(p).Return(&p, nil)
 
 	if dto, err := ps.CreatePlayer(pc); dto == nil || *dto != p.ToDTO() || err != nil {
 		t.Error("Player created but an error was returned")
@@ -103,10 +145,10 @@ func TestCreatePlayerReturnsDTOAfterSave(t *testing.T) {
 }
 
 func TestGetAllReturnsPlayers(t *testing.T) {
-	teardown := setup(t)
+	teardown := playerSetup(t)
 	defer teardown()
 
-	mockRepo.EXPECT().GetAll().Return([]realdomain.Player{
+	mockPlayerRepo.EXPECT().GetAll().Return([]realdomain.Player{
 		{
 			Name:  "john",
 			Email: "doe@mail.com",
@@ -119,12 +161,12 @@ func TestGetAllReturnsPlayers(t *testing.T) {
 }
 
 func TestGetAllReturnsThrownError(t *testing.T) {
-	teardown := setup(t)
+	teardown := playerSetup(t)
 	defer teardown()
 
 	errBody := errors.ErrorBody{"Error": "DB error"}
 
-	mockRepo.EXPECT().GetAll().Return(nil, errors.NewInternalServerError(errBody))
+	mockPlayerRepo.EXPECT().GetAll().Return(nil, errors.NewInternalServerError(errBody))
 
 	if player, err := ps.GetAll(); player != nil || err == nil {
 		t.Error("Repository returned players but service encountered an error")

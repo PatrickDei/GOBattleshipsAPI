@@ -10,7 +10,7 @@ import (
 
 var pr PlayerRepository
 
-func setup() (sqlmock.Sqlmock, func()) {
+func playerSetup() (sqlmock.Sqlmock, func()) {
 	mockDb, mock, _ := sqlmock.New()
 
 	pr = PlayerRepositoryImpl{dbClient: sqlx.NewDb(mockDb, "mysql")}
@@ -21,7 +21,7 @@ func setup() (sqlmock.Sqlmock, func()) {
 }
 
 func TestExistsByEmailReturnsTrue(t *testing.T) {
-	mock, teardown := setup()
+	mock, teardown := playerSetup()
 	defer teardown()
 
 	email := "email"
@@ -35,7 +35,7 @@ func TestExistsByEmailReturnsTrue(t *testing.T) {
 }
 
 func TestExistsByIdReturnsResult(t *testing.T) {
-	mock, teardown := setup()
+	mock, teardown := playerSetup()
 	defer teardown()
 
 	id := "1"
@@ -49,7 +49,7 @@ func TestExistsByIdReturnsResult(t *testing.T) {
 }
 
 func TestExistsByEmailReturnsFalse(t *testing.T) {
-	mock, teardown := setup()
+	mock, teardown := playerSetup()
 	defer teardown()
 
 	email := "email"
@@ -63,7 +63,7 @@ func TestExistsByEmailReturnsFalse(t *testing.T) {
 }
 
 func TestExistsByEmailReturnsRuntimeError(t *testing.T) {
-	mock, teardown := setup()
+	mock, teardown := playerSetup()
 	defer teardown()
 
 	email := "email"
@@ -76,7 +76,7 @@ func TestExistsByEmailReturnsRuntimeError(t *testing.T) {
 }
 
 func TestSaveReturnsSavedPlayer(t *testing.T) {
-	mock, teardown := setup()
+	mock, teardown := playerSetup()
 	defer teardown()
 
 	lastInsertId := int64(10001)
@@ -93,7 +93,7 @@ func TestSaveReturnsSavedPlayer(t *testing.T) {
 }
 
 func TestSaveReturnsRuntimeError(t *testing.T) {
-	mock, teardown := setup()
+	mock, teardown := playerSetup()
 	defer teardown()
 
 	p := Player{
@@ -110,7 +110,7 @@ func TestSaveReturnsRuntimeError(t *testing.T) {
 
 /*
 func TestGetByIdReturnsPlayer(t *testing.T) {
-	mock, teardown := setup()
+	mock, teardown := playerSetup()
 	defer teardown()
 
 	id := "1"
@@ -131,7 +131,7 @@ func TestGetByIdReturnsPlayer(t *testing.T) {
 }*/
 
 func TestGetAllReturnsPlayers(t *testing.T) {
-	mock, teardown := setup()
+	mock, teardown := playerSetup()
 	defer teardown()
 
 	mock.ExpectQuery("SELECT Name, Email FROM Players").WillReturnRows(
@@ -143,7 +143,7 @@ func TestGetAllReturnsPlayers(t *testing.T) {
 }
 
 func TestGetAllThrowsError(t *testing.T) {
-	mock, teardown := setup()
+	mock, teardown := playerSetup()
 	defer teardown()
 
 	mock.ExpectQuery("SELECT Name, Email FROM Players").WillReturnError(sql.ErrTxDone)

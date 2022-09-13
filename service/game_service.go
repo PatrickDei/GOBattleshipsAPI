@@ -5,6 +5,7 @@ import (
 	"go-battleships/errors"
 )
 
+//go:generate mockgen -destination=../mocks/service/mock_game_service.go -package=service -source=game_service.go GameService
 type GameService interface {
 	CreateGame(playerId string, opponentId string) (*domain.Game, *errors.AppError)
 }

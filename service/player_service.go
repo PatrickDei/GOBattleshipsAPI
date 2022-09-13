@@ -52,6 +52,9 @@ func (ps PlayerServiceImpl) ExistsById(id string) (bool, *errors.AppError) {
 
 func (ps PlayerServiceImpl) GetById(id string) (*dto.PlayerDTO, *errors.AppError) {
 	p, err := ps.repo.GetById(id)
+	if err != nil {
+		return nil, err
+	}
 	pdto := p.ToDTO()
 	pdto.Id = ""
 	return &pdto, err

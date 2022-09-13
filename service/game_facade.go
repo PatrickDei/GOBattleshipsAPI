@@ -5,6 +5,7 @@ import (
 	"go-battleships/errors"
 )
 
+//go:generate mockgen -destination=../mocks/service/mock_game_facade.go -package=service -source=game_facade.go GameFacade
 type GameFacade interface {
 	ChallengeOpponent(playerId string, opponentId string) (*dto.GameDTO, *errors.AppError)
 }

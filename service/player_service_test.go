@@ -101,3 +101,32 @@ func TestCreatePlayerReturnsDTOAfterSave(t *testing.T) {
 		t.Error("Player created but an error was returned")
 	}
 }
+
+func TestGetAllReturnsPlayers(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	mockRepo.EXPECT().GetAll().Return([]realdto.PlayerDTO{
+		{
+			Name:  "john",
+			Email: "doe@mail.com",
+		},
+	}, nil)
+
+	if player, err := ps.GetAll(); player == nil || err != nil {
+		t.Error("Repository returned players but service encountered an error")
+	}
+}
+
+func TestGetAllReturnsThrownError(t *testing.T) {
+	teardown := setup(t)
+	defer teardown()
+
+	errBody := errors.ErrorBody{"Error": "DB error"}
+
+	mockRepo.EXPECT().GetAll().Return(nil, errors.NewInternalServerError(errBody))
+
+	if player, err := ps.GetAll(); player != nil || err == nil {
+		t.Error("Repository returned players but service encountered an error")
+	}
+}

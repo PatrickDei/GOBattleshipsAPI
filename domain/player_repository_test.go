@@ -34,6 +34,20 @@ func TestExistsByEmailReturnsTrue(t *testing.T) {
 	}
 }
 
+func TestExistsByIdReturnsResult(t *testing.T) {
+	mock, teardown := setup()
+	defer teardown()
+
+	id := "1"
+
+	mock.ExpectQuery("SELECT 1 FROM Players WHERE").WillReturnRows(
+		sqlmock.NewRows([]string{"id"}))
+
+	if exists, _ := pr.ExistsById(id); exists != false {
+		t.Error("Database returned no rows but repo returned true")
+	}
+}
+
 func TestExistsByEmailReturnsFalse(t *testing.T) {
 	mock, teardown := setup()
 	defer teardown()
@@ -106,16 +120,16 @@ func TestGetByIdReturnsPlayer(t *testing.T) {
 		Email: "doe@mail.com",
 	}
 
-	mock.ExpectPrepare("^SELECT (.+) FROM Players").ExpectQuery().WithArgs(id).WillReturnRows(
-		sqlmock.NewRows([]string{"id"}).AddRow(1))
+	mock.ExpectQuery("SELECT Name, Email FROM Players WHERE").WillReturnRows(
+		sqlmock.NewRows([]string{"Name", "Email"}).AddRow("john", "mail@mail.com"))
 
-	pa, _ := pr.GetById(id)
-	fmt.Printf("%+v", pa)
+	pa, e := pr.GetById(id)
+	fmt.Printf("%+v %+v", pa, e)
 	if player, err := pr.GetById(id); player.Id != p.Id || err != nil {
 		t.Error("The method didn't return the requested Id")
 	}
-}
-*/
+}*/
+
 func TestGetAllReturnsPlayers(t *testing.T) {
 	mock, teardown := setup()
 	defer teardown()

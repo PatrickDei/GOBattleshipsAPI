@@ -28,15 +28,6 @@ func (pr PlayerRepositoryImpl) Save(p Player) (*Player, *errors.AppError) {
 	return &p, nil
 }
 
-func extractId(r sql.Result) int64 {
-	id, err := r.LastInsertId()
-	if err != nil {
-		logger.Error("Error while extracting new id")
-	}
-
-	return id
-}
-
 func (pr PlayerRepositoryImpl) ExistsByEmail(email string) (bool, *errors.AppError) {
 	return pr.existsByColumn("Email", email)
 }
@@ -60,7 +51,7 @@ func (pr PlayerRepositoryImpl) existsByColumn(column string, value string) (bool
 }
 
 func (pr PlayerRepositoryImpl) GetById(id string) (*Player, *errors.AppError) {
-	selectStatement := "SELECT * FROM Players WHERE Id = ?"
+	selectStatement := "SELECT Name, Email FROM Players WHERE Id = ?"
 
 	var p Player
 	err := pr.dbClient.Get(&p, selectStatement, id)

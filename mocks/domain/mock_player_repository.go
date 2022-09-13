@@ -50,6 +50,21 @@ func (mr *MockPlayerRepositoryMockRecorder) ExistsByEmail(arg0 interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExistsByEmail", reflect.TypeOf((*MockPlayerRepository)(nil).ExistsByEmail), arg0)
 }
 
+// GetAll mocks base method.
+func (m *MockPlayerRepository) GetAll() ([]domain.Player, *errors.AppError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAll")
+	ret0, _ := ret[0].([]domain.Player)
+	ret1, _ := ret[1].(*errors.AppError)
+	return ret0, ret1
+}
+
+// GetAll indicates an expected call of GetAll.
+func (mr *MockPlayerRepositoryMockRecorder) GetAll() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockPlayerRepository)(nil).GetAll))
+}
+
 // GetById mocks base method.
 func (m *MockPlayerRepository) GetById(arg0 string) (*domain.Player, *errors.AppError) {
 	m.ctrl.T.Helper()

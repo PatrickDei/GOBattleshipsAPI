@@ -31,4 +31,5 @@ type PlayerRepository interface {
 	Save(Player) (*Player, *errors.AppError)
 	ExistsByEmail(string) (bool, *errors.AppError)
 	GetById(string) (*Player, *errors.AppError)
+	GetAll() ([]Player, *errors.AppError)
 }

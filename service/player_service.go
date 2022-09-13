@@ -13,6 +13,7 @@ type PlayerService interface {
 	CreatePlayer(command dto.PlayerCommand) (*dto.PlayerDTO, *errors.AppError)
 	ExistsByEmail(string) (bool, *errors.AppError)
 	GetById(string) (*dto.PlayerDTO, *errors.AppError)
+	GetAll() ([]dto.PlayerDTO, *errors.AppError)
 }
 
 type PlayerServiceImpl struct {
@@ -54,6 +55,21 @@ func (ps PlayerServiceImpl) GetById(id string) (*dto.PlayerDTO, *errors.AppError
 	pdto := p.ToDTO()
 	pdto.Id = ""
 	return &pdto, err
+}
+
+func (ps PlayerServiceImpl) GetAll() ([]dto.PlayerDTO, *errors.AppError) {
+	p, err := ps.repo.GetAll()
+
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make([]dto.PlayerDTO, 0)
+	for _, player := range p {
+		resp = append(resp, player.ToDTO())
+	}
+
+	return resp, nil
 }
 
 func NewPlayerService(repo domain.PlayerRepository) PlayerService {

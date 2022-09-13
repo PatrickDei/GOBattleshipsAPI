@@ -67,6 +67,20 @@ func (pr PlayerRepositoryImpl) GetById(id string) (*Player, *errors.AppError) {
 	return &p, nil
 }
 
+func (pr PlayerRepositoryImpl) GetAll() ([]Player, *errors.AppError) {
+	selectStatement := "SELECT Name, Email FROM Players"
+
+	p := make([]Player, 0)
+
+	err := pr.dbClient.Select(&p, selectStatement)
+	if err != nil {
+		logger.Error("Error while fetching all players: " + err.Error())
+		return nil, errors.NewInternalServerError(map[string]string{"Message": "Encountered error when getting available players"})
+	}
+
+	return p, nil
+}
+
 func NewPlayerRepository(dbClient *sqlx.DB) PlayerRepository {
 	return PlayerRepositoryImpl{dbClient: dbClient}
 }

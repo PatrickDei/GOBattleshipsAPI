@@ -11,11 +11,14 @@ type BoardService interface {
 }
 
 type BoardServiceImpl struct {
-	repo domain.BoardRepository
+	repo         domain.BoardRepository
+	boardFactory domain.BoardFactory
 }
 
 func (bs BoardServiceImpl) CreateNewBoard() (*domain.Board, *errors.AppError) {
 	b := domain.NewEmptyBoard()
+	bs.boardFactory.PopulateBoard(&b)
+
 	board, err := bs.repo.Save(b)
 	if err != nil {
 		return nil, err
@@ -23,6 +26,6 @@ func (bs BoardServiceImpl) CreateNewBoard() (*domain.Board, *errors.AppError) {
 	return board, nil
 }
 
-func NewBoardService(br domain.BoardRepository) BoardService {
-	return BoardServiceImpl{repo: br}
+func NewBoardService(br domain.BoardRepository, bf domain.BoardFactory) BoardService {
+	return BoardServiceImpl{repo: br, boardFactory: bf}
 }

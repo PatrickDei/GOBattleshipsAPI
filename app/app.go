@@ -28,7 +28,7 @@ func Start() {
 		Facade: service.NewGameFacade(
 			service.NewGameService(domain.NewGameRepository(dbClient)),
 			ps,
-			service.NewBoardService(domain.NewBoardRepository(dbClient)),
+			service.NewBoardService(domain.NewBoardRepository(dbClient), domain.NewBoardFactory()),
 		),
 	}
 

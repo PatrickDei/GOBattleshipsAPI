@@ -9,13 +9,15 @@ import (
 )
 
 var mockBoardRepo *domain.MockBoardRepository
+var mockBoardFactory *domain.MockBoardFactory
 var bs BoardService
 
 func boardSetup(t *testing.T) func() {
 	ctrl := gomock.NewController(t)
 	mockBoardRepo = domain.NewMockBoardRepository(ctrl)
+	mockBoardFactory = domain.NewMockBoardFactory(ctrl)
 
-	bs = BoardServiceImpl{repo: mockBoardRepo}
+	bs = BoardServiceImpl{repo: mockBoardRepo, boardFactory: mockBoardFactory}
 
 	return func() {
 		defer ctrl.Finish()
@@ -30,6 +32,7 @@ func TestCreateNewBoardReturnsCreatedBoard(t *testing.T) {
 	boardWithId := b
 	boardWithId.Id = "1"
 
+	mockBoardFactory.EXPECT().PopulateBoard(&b)
 	mockBoardRepo.EXPECT().Save(b).Return(&boardWithId, nil)
 
 	if board, err := bs.CreateNewBoard(); board == nil || err != nil {
@@ -43,6 +46,7 @@ func TestCreateNewBoardReturnsError(t *testing.T) {
 
 	b := realdomain.NewEmptyBoard()
 
+	mockBoardFactory.EXPECT().PopulateBoard(&b)
 	mockBoardRepo.EXPECT().Save(b).Return(nil, errors.NewInternalServerError(errors.NewErrorBody("code", "arg")))
 
 	if _, err := bs.CreateNewBoard(); err == nil {

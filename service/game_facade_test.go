@@ -10,14 +10,16 @@ import (
 
 var mockGameService *service.MockGameService
 var mockPlayerService *service.MockPlayerService
+var mockBoardService *service.MockBoardService
 var gf GameFacade
 
 func gameFacadeSetup(t *testing.T) func() {
 	ctrl := gomock.NewController(t)
 	mockGameService = service.NewMockGameService(ctrl)
 	mockPlayerService = service.NewMockPlayerService(ctrl)
+	mockBoardService = service.NewMockBoardService(ctrl)
 
-	gf = GameFacadeImpl{gameService: mockGameService, playerService: mockPlayerService}
+	gf = GameFacadeImpl{gameService: mockGameService, playerService: mockPlayerService, boardService: mockBoardService}
 
 	return func() {
 		defer ctrl.Finish()
@@ -64,9 +66,12 @@ func TestChallengeOpponentReturnsGame(t *testing.T) {
 		OpponentId: opponentId,
 		TurnCount:  0,
 	}
+	b := domain.NewEmptyBoard()
+	b.Id = "1"
 
 	mockPlayerService.EXPECT().ExistsById(playerId).Return(true, nil)
 	mockPlayerService.EXPECT().ExistsById(opponentId).Return(true, nil)
+	mockBoardService.EXPECT().CreateNewBoard().Return(&b, nil).Times(2)
 	mockGameService.EXPECT().CreateGame(playerId, opponentId).Return(&g, nil)
 
 	if game, err := gf.ChallengeOpponent(playerId, opponentId); err != nil || game == nil {
@@ -80,9 +85,12 @@ func TestChallengeOpponentReturnsRuntimeError(t *testing.T) {
 
 	playerId := "1"
 	opponentId := "2"
+	b := domain.NewEmptyBoard()
+	b.Id = "1"
 
 	mockPlayerService.EXPECT().ExistsById(playerId).Return(true, nil)
 	mockPlayerService.EXPECT().ExistsById(opponentId).Return(true, nil)
+	mockBoardService.EXPECT().CreateNewBoard().Return(&b, nil).Times(2)
 	mockGameService.EXPECT().CreateGame(playerId, opponentId).Return(nil, errors.NewInternalServerError(errors.NewErrorBody("code", "arg")))
 
 	if _, err := gf.ChallengeOpponent(playerId, opponentId); err == nil {

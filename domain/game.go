@@ -6,10 +6,12 @@ import (
 )
 
 type Game struct {
-	Id         string
-	PlayerId   string
-	OpponentId string
-	TurnCount  int
+	Id              string
+	PlayerId        string
+	OpponentId      string
+	TurnCount       int
+	PlayerBoardId   string
+	OpponentBoardId string
 }
 
 func (g Game) ToDTO() dto.GameDTO {

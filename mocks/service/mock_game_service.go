@@ -36,7 +36,7 @@ func (m *MockGameService) EXPECT() *MockGameServiceMockRecorder {
 }
 
 // CreateGame mocks base method.
-func (m *MockGameService) CreateGame(playerId, opponentId string) (*domain.Game, *errors.AppError) {
+func (m *MockGameService) CreateGame(playerId string, opponentId string, playerBoardId string, opponentBoardId string) (*domain.Game, *errors.AppError) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateGame", playerId, opponentId)
 	ret0, _ := ret[0].(*domain.Game)

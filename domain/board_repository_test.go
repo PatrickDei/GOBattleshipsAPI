@@ -5,7 +5,6 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/jmoiron/sqlx"
 	"strconv"
-	"strings"
 	"testing"
 )
 
@@ -26,9 +25,7 @@ func TestSaveReturnsSavedBoard(t *testing.T) {
 	defer teardown()
 
 	lastInsertId := int64(10001)
-	b := Board{
-		fields: strings.Repeat(strings.Repeat(".", BoardColumnCount), BoardRowCount),
-	}
+	b := NewEmptyBoard()
 
 	mock.ExpectExec("INSERT INTO Boards").WillReturnResult(sqlmock.NewResult(lastInsertId, 1))
 
@@ -41,9 +38,7 @@ func TestSaveBoardReturnsRuntimeError(t *testing.T) {
 	mock, teardown := boardSetup()
 	defer teardown()
 
-	b := Board{
-		fields: strings.Repeat(strings.Repeat(".", BoardColumnCount), BoardRowCount),
-	}
+	b := NewEmptyBoard()
 
 	mock.ExpectExec("INSERT INTO Boards").WillReturnError(sql.ErrTxDone)
 

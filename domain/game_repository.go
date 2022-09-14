@@ -12,9 +12,9 @@ type GameRepositoryImpl struct {
 }
 
 func (gr GameRepositoryImpl) Save(g Game) (*Game, *errors.AppError) {
-	insertStatement := "INSERT INTO Games (PlayerId, OpponentId, TurnCount) VALUES (?, ?, ?)"
+	insertStatement := "INSERT INTO Games (PlayerId, OpponentId, TurnCount, PlayerBoardId, OpponentBoardId) VALUES (?, ?, ?, ?, ?)"
 
-	result, err := gr.dbClient.Exec(insertStatement, g.PlayerId, g.OpponentId, g.TurnCount)
+	result, err := gr.dbClient.Exec(insertStatement, g.PlayerId, g.OpponentId, g.TurnCount, g.PlayerBoardId, g.OpponentBoardId)
 	if err != nil {
 		logger.Error("Error while creating game")
 		return nil, errors.NewInternalServerError(errors.NewErrorBody("error.db", "Error while creating game"))

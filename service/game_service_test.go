@@ -38,7 +38,7 @@ func TestCreateGameReturnsSavedGame(t *testing.T) {
 
 	mockGameRepo.EXPECT().Save(g).Return(&gWithId, nil)
 
-	savedG, err := gs.CreateGame(playerId, opponentId)
+	savedG, err := gs.CreateGame(playerId, opponentId, "", "")
 	if err != nil {
 		t.Error("Repository returned game but service returned error")
 	}
@@ -61,7 +61,7 @@ func TestCreateGameReturnsError(t *testing.T) {
 
 	mockGameRepo.EXPECT().Save(g).Return(nil, errors.NewInternalServerError(errors.NewErrorBody("code", "arg")))
 
-	savedG, err := gs.CreateGame(playerId, opponentId)
+	savedG, err := gs.CreateGame(playerId, opponentId, "", "")
 	if err == nil {
 		t.Error("Repository returned error but service didn't")
 	}

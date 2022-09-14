@@ -13,6 +13,7 @@ type GameFacade interface {
 type GameFacadeImpl struct {
 	gameService   GameService
 	playerService PlayerService
+	boardService  BoardService
 }
 
 func (gf GameFacadeImpl) ChallengeOpponent(playerId string, opponentId string) (*dto.GameDTO, *errors.AppError) {
@@ -24,7 +25,17 @@ func (gf GameFacadeImpl) ChallengeOpponent(playerId string, opponentId string) (
 		return nil, err
 	}
 
-	g, err := gf.gameService.CreateGame(playerId, opponentId)
+	playerBoard, err := gf.boardService.CreateNewBoard()
+	if err != nil {
+		return nil, err
+	}
+
+	opponentBoard, err := gf.boardService.CreateNewBoard()
+	if err != nil {
+		return nil, err
+	}
+
+	g, err := gf.gameService.CreateGame(playerId, opponentId, playerBoard.Id, opponentBoard.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -44,6 +55,6 @@ func (gf GameFacadeImpl) playerExistsById(id string) (bool, *errors.AppError) {
 	return true, nil
 }
 
-func NewGameFacade(s GameService, p PlayerService) GameFacade {
-	return GameFacadeImpl{gameService: s, playerService: p}
+func NewGameFacade(s GameService, p PlayerService, b BoardService) GameFacade {
+	return GameFacadeImpl{gameService: s, playerService: p, boardService: b}
 }

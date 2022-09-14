@@ -24,7 +24,13 @@ func Start() {
 	dbClient := getDbClient()
 	ps := service.NewPlayerService(domain.NewPlayerRepository(dbClient))
 	ph := handlers.PlayerHandler{Service: ps}
-	gh := handlers.GameHandler{Facade: service.NewGameFacade(service.NewGameService(domain.NewGameRepository(dbClient)), ps)}
+	gh := handlers.GameHandler{
+		Facade: service.NewGameFacade(
+			service.NewGameService(domain.NewGameRepository(dbClient)),
+			ps,
+			service.NewBoardService(domain.NewBoardRepository(dbClient)),
+		),
+	}
 
 	router.HandleFunc("/player", ph.CreatePlayer).Methods(http.MethodPost)
 	router.HandleFunc("/player/list", ph.GetAllPlayers).Methods(http.MethodGet)

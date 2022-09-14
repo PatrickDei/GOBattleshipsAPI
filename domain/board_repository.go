@@ -14,7 +14,7 @@ type BoardRepositoryImpl struct {
 func (br BoardRepositoryImpl) Save(b Board) (*Board, *errors.AppError) {
 	insertStatement := "INSERT INTO Boards (Fields) VALUES (?)"
 
-	result, err := br.dbClient.Exec(insertStatement, b.fields)
+	result, err := br.dbClient.Exec(insertStatement, b.Fields)
 	if err != nil {
 		logger.Error("Error while creating board")
 		return nil, errors.NewInternalServerError(errors.NewErrorBody("error.db", "Error while creating board"))

@@ -27,6 +27,19 @@ func (gr GameRepositoryImpl) Save(g Game) (*Game, *errors.AppError) {
 	return &g, nil
 }
 
+func (gr GameRepositoryImpl) GetById(id string) (*Game, *errors.AppError) {
+	selectStatement := "SELECT OpponentId, TurnCount FROM Games WHERE Id = ?"
+
+	var g Game
+	err := gr.dbClient.Get(&g, selectStatement, id)
+	if err != nil {
+		logger.Error("Error while reading game")
+		return nil, errors.NewInternalServerError(errors.NewErrorBody("error.db", "Error while reading game"))
+	}
+
+	return &g, nil
+}
+
 func NewGameRepository(dbClient *sqlx.DB) GameRepository {
 	return GameRepositoryImpl{dbClient: dbClient}
 }

@@ -35,6 +35,21 @@ func (m *MockGameRepository) EXPECT() *MockGameRepositoryMockRecorder {
 	return m.recorder
 }
 
+// GetById mocks base method.
+func (m *MockGameRepository) GetById(arg0 string) (*domain.Game, *errors.AppError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetById", arg0)
+	ret0, _ := ret[0].(*domain.Game)
+	ret1, _ := ret[1].(*errors.AppError)
+	return ret0, ret1
+}
+
+// GetById indicates an expected call of GetById.
+func (mr *MockGameRepositoryMockRecorder) GetById(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetById", reflect.TypeOf((*MockGameRepository)(nil).GetById), arg0)
+}
+
 // Save mocks base method.
 func (m *MockGameRepository) Save(arg0 domain.Game) (*domain.Game, *errors.AppError) {
 	m.ctrl.T.Helper()

@@ -33,4 +33,5 @@ func (g Game) determineStartingId() string {
 //go:generate mockgen -destination=../mocks/domain/mock_game_repository.go -package=domain -source=game.go GameRepository
 type GameRepository interface {
 	Save(Game) (*Game, *errors.AppError)
+	GetById(string) (*Game, *errors.AppError)
 }

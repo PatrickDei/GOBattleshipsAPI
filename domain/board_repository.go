@@ -12,11 +12,11 @@ type BoardRepositoryImpl struct {
 }
 
 func (br BoardRepositoryImpl) Save(b Board) (*Board, *errors.AppError) {
-	insertStatement := "INSERT INTO Boards (Fields, ShipCount) VALUES (?, ?)"
+	insertStatement := "INSERT INTO Boards (Fields, ShipCount, PlayerId) VALUES (?, ?, ?)"
 
-	result, err := br.dbClient.Exec(insertStatement, b.Fields, b.ShipCount)
+	result, err := br.dbClient.Exec(insertStatement, b.Fields, b.ShipCount, b.PlayerId)
 	if err != nil {
-		logger.Error("Error while creating board")
+		logger.Error(err.Error())
 		return nil, errors.NewInternalServerError(errors.NewErrorBody("error.db", "Error while creating board"))
 	}
 
@@ -28,10 +28,10 @@ func (br BoardRepositoryImpl) Save(b Board) (*Board, *errors.AppError) {
 }
 
 func (br BoardRepositoryImpl) GetByPlayerIdAndGameId(playerId string, gameId string) (*Board, *errors.AppError) {
-	selectStatement := "SELECT b.Id, b.Fields FROM Boards b JOIN Games G on b.Id = G.PlayerBoardId OR b.Id = G.OpponentBoardId WHERE G.Id = ? AND (G.PlayerId = ? OR G.OpponentId = ?)"
+	selectStatement := "SELECT b.Id, b.Fields FROM Boards b JOIN Games G on b.Id = G.PlayerBoardId OR b.Id = G.OpponentBoardId WHERE G.Id = ? AND b.PlayerId = ?"
 
 	var b Board
-	err := br.dbClient.Get(&b, selectStatement, gameId, playerId, playerId)
+	err := br.dbClient.Get(&b, selectStatement, gameId, playerId)
 	if err != nil {
 		logger.Error(err.Error())
 		return nil, errors.NewInternalServerError(errors.NewErrorBody("error.db", "Error while reading board"))

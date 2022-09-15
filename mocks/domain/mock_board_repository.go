@@ -36,7 +36,7 @@ func (m *MockBoardRepository) EXPECT() *MockBoardRepositoryMockRecorder {
 }
 
 // GetByPlayerIdAndGameId mocks base method.
-func (m *MockBoardRepository) GetByPlayerIdAndGameId(playerId, gameId string) (*domain.Board, *errors.AppError) {
+func (m *MockBoardRepository) GetByPlayerIdAndGameId(playerId string, gameId string) (*domain.Board, *errors.AppError) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByPlayerIdAndGameId", playerId, gameId)
 	ret0, _ := ret[0].(*domain.Board)

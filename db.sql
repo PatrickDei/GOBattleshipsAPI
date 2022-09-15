@@ -33,3 +33,7 @@ ALTER TABLE Games
 
 ALTER TABLE Boards
     ADD COLUMN ShipCount int NOT NULL;
+
+ALTER TABLE Boards
+    ADD COLUMN PlayerId int NOT NULL,
+    ADD FOREIGN KEY PlayerIdFK(PlayerId) REFERENCES Players(Id);

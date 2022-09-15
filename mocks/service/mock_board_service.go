@@ -36,9 +36,9 @@ func (m *MockBoardService) EXPECT() *MockBoardServiceMockRecorder {
 }
 
 // CreateNewBoard mocks base method.
-func (m *MockBoardService) CreateNewBoard() (*domain.Board, *errors.AppError) {
+func (m *MockBoardService) CreateNewBoardForPlayer(string) (*domain.Board, *errors.AppError) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateNewBoard")
+	ret := m.ctrl.Call(m, "CreateNewBoardForPlayer")
 	ret0, _ := ret[0].(*domain.Board)
 	ret1, _ := ret[1].(*errors.AppError)
 	return ret0, ret1
@@ -47,7 +47,7 @@ func (m *MockBoardService) CreateNewBoard() (*domain.Board, *errors.AppError) {
 // CreateNewBoard indicates an expected call of CreateNewBoard.
 func (mr *MockBoardServiceMockRecorder) CreateNewBoard() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateNewBoard", reflect.TypeOf((*MockBoardService)(nil).CreateNewBoard))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateNewBoardForPlayer", reflect.TypeOf((*MockBoardService)(nil).CreateNewBoardForPlayer))
 }
 
 // GetByPlayerIdAndGameId mocks base method.

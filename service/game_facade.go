@@ -27,12 +27,12 @@ func (gf GameFacadeImpl) ChallengeOpponent(playerId string, opponentId string) (
 		return nil, err
 	}
 
-	playerBoard, err := gf.boardService.CreateNewBoard()
+	playerBoard, err := gf.boardService.CreateNewBoardForPlayer(playerId)
 	if err != nil {
 		return nil, err
 	}
 
-	opponentBoard, err := gf.boardService.CreateNewBoard()
+	opponentBoard, err := gf.boardService.CreateNewBoardForPlayer(opponentId)
 	if err != nil {
 		return nil, err
 	}

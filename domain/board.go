@@ -12,6 +12,7 @@ type Board struct {
 	Id        string `db:"Id"`
 	Fields    string `db:"Fields"`
 	ShipCount int    `db:"ShipCount"`
+	PlayerId  string `db:"PlayerId"`
 }
 
 func (b Board) GetFieldsAsSlice() []string {

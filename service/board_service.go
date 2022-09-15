@@ -7,7 +7,7 @@ import (
 
 //go:generate mockgen -destination=../mocks/service/mock_board_service.go -package=service -source=board_service.go BoardService
 type BoardService interface {
-	CreateNewBoard() (*domain.Board, *errors.AppError)
+	CreateNewBoardForPlayer(string) (*domain.Board, *errors.AppError)
 	GetByPlayerIdAndGameId(playerId string, gameId string) (*domain.Board, *errors.AppError)
 }
 
@@ -16,8 +16,9 @@ type BoardServiceImpl struct {
 	boardFactory domain.BoardFactory
 }
 
-func (bs BoardServiceImpl) CreateNewBoard() (*domain.Board, *errors.AppError) {
+func (bs BoardServiceImpl) CreateNewBoardForPlayer(playerId string) (*domain.Board, *errors.AppError) {
 	b := bs.boardFactory.GenerateNewBoard()
+	b.PlayerId = playerId
 
 	board, err := bs.repo.Save(b)
 	if err != nil {

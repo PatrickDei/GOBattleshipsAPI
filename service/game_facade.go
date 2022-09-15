@@ -79,6 +79,10 @@ func (gf GameFacadeImpl) GetGameStatus(playerId string, gameId string) (*dto.Gam
 }
 
 func (gf GameFacadeImpl) ListPlayersGames(playerId string) ([]dto.GameDTO, *errors.AppError) {
+	if exists, err := gf.playerExistsById(playerId); exists != true {
+		return nil, err
+	}
+
 	games, err := gf.gameService.ListByPlayerId(playerId)
 	if err != nil {
 		return nil, err

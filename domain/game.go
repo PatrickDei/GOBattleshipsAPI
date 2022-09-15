@@ -27,7 +27,6 @@ func (g Game) ToDTO() dto.GameDTO {
 func (g Game) ToStateDTOForPlayer(playerId string) dto.GameDTO {
 	return dto.GameDTO{
 		Id:         g.Id,
-		PlayerId:   g.PlayerId,
 		OpponentId: g.OpponentId,
 		Status:     g.DetermineStatusForPlayer(playerId),
 	}

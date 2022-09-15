@@ -30,3 +30,6 @@ ALTER TABLE Games
 
 ALTER TABLE Games
     ADD COLUMN Status int NOT NULL;
+
+ALTER TABLE Boards
+    ADD COLUMN ShipCount int NOT NULL;

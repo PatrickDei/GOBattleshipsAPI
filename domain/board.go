@@ -11,7 +11,7 @@ const BoardRowCount = 10
 type Board struct {
 	Id        string `db:"Id"`
 	Fields    string `db:"Fields"`
-	ShipCount int
+	ShipCount int    `db:"ShipCount"`
 }
 
 func (b Board) GetFieldsAsSlice() []string {

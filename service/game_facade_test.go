@@ -100,3 +100,57 @@ func TestChallengeOpponentReturnsRuntimeError(t *testing.T) {
 	}
 
 }
+
+func TestGetGameStatusReturnsErrorWhenPlayerNotFound(t *testing.T) {
+	teardown := gameFacadeSetup(t)
+	defer teardown()
+
+	mockPlayerService.EXPECT().ExistsById(gomock.Any()).Return(false, nil)
+
+	if _, err := gf.GetGameStatus("", ""); err == nil {
+		t.Error("Player was not found but facade didn't return error")
+	}
+}
+
+func TestGetGameStatusReturnsErrorWhenGameNotFound(t *testing.T) {
+	teardown := gameFacadeSetup(t)
+	defer teardown()
+
+	mockPlayerService.EXPECT().ExistsById(gomock.Any()).Return(true, nil)
+	mockGameService.EXPECT().GetById(gomock.Any()).Return(nil, errors.NewInternalServerError(errors.NewErrorBody("code", "arg")))
+
+	if _, err := gf.GetGameStatus("", ""); err == nil {
+		t.Error("Game was not found but facade didn't return error")
+	}
+}
+
+func TestGetGameStatusReturnsErrorWhenPlayerBoardNotFound(t *testing.T) {
+	teardown := gameFacadeSetup(t)
+	defer teardown()
+
+	g := domain.Game{}
+
+	mockPlayerService.EXPECT().ExistsById(gomock.Any()).Return(true, nil)
+	mockGameService.EXPECT().GetById(gomock.Any()).Return(&g, nil)
+	mockBoardService.EXPECT().GetByPlayerIdAndGameId(gomock.Any(), gomock.Any()).Return(nil, errors.NewInternalServerError(errors.NewErrorBody("code", "arg")))
+
+	if _, err := gf.GetGameStatus("", ""); err == nil {
+		t.Error("Board was not found but facade didn't return error")
+	}
+}
+
+func TestGetGameStatusReturnsGameState(t *testing.T) {
+	teardown := gameFacadeSetup(t)
+	defer teardown()
+
+	g := domain.Game{}
+	b := domain.Board{}
+
+	mockPlayerService.EXPECT().ExistsById(gomock.Any()).Return(true, nil)
+	mockGameService.EXPECT().GetById(gomock.Any()).Return(&g, nil)
+	mockBoardService.EXPECT().GetByPlayerIdAndGameId(gomock.Any(), gomock.Any()).Return(&b, nil)
+
+	if gs, _ := gf.GetGameStatus("", ""); gs == nil {
+		t.Error("Facade didn't return any game state")
+	}
+}

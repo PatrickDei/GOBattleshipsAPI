@@ -12,7 +12,7 @@ type Game struct {
 	TurnCount       int    `db:"TurnCount"`
 	PlayerBoardId   string
 	OpponentBoardId string
-	Status          int `db:"Status"`
+	Status          GameStatus `db:"Status"`
 }
 
 func (g Game) ToDTO() dto.GameDTO {

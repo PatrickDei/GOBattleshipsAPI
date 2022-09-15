@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"database/sql"
 	"github.com/PatrickDei/log-lib/logger"
 	"github.com/jmoiron/sqlx"
 	"go-battleships/errors"
@@ -28,13 +29,17 @@ func (gr GameRepositoryImpl) Save(g Game) (*Game, *errors.AppError) {
 }
 
 func (gr GameRepositoryImpl) GetById(id string) (*Game, *errors.AppError) {
-	selectStatement := "SELECT OpponentId, TurnCount FROM Games WHERE Id = ?"
+	selectStatement := "SELECT PlayerId, OpponentId, TurnCount FROM Games WHERE Id = ?"
 
 	var g Game
 	err := gr.dbClient.Get(&g, selectStatement, id)
 	if err != nil {
-		logger.Error("Error while reading game")
-		return nil, errors.NewInternalServerError(errors.NewErrorBody("error.db", "Error while reading game"))
+		if err != sql.ErrNoRows {
+			logger.Error("Error while reading game")
+			return nil, errors.NewInternalServerError(errors.NewErrorBody("error.db", "Error while reading game"))
+		} else {
+			return nil, errors.NewNotFoundError(errors.NewErrorBody("unknown-game-id", id))
+		}
 	}
 
 	return &g, nil

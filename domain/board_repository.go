@@ -27,6 +27,19 @@ func (br BoardRepositoryImpl) Save(b Board) (*Board, *errors.AppError) {
 	return &b, nil
 }
 
+func (br BoardRepositoryImpl) GetByPlayerIdAndGameId(playerId string, gameId string) (*Board, *errors.AppError) {
+	selectStatement := "SELECT b.Id, b.Fields FROM Boards b JOIN Games G on b.Id = G.PlayerBoardId OR b.Id = G.OpponentBoardId WHERE G.Id = ? AND (G.PlayerId = ? OR G.OpponentId = ?)"
+
+	var b Board
+	err := br.dbClient.Get(&b, selectStatement, gameId, playerId, playerId)
+	if err != nil {
+		logger.Error("Error while reading board")
+		return nil, errors.NewInternalServerError(errors.NewErrorBody("error.db", "Error while reading board"))
+	}
+
+	return &b, nil
+}
+
 func NewBoardRepository(db *sqlx.DB) BoardRepository {
 	return BoardRepositoryImpl{dbClient: db}
 }

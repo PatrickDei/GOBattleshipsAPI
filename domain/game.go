@@ -19,11 +19,11 @@ func (g Game) ToDTO() dto.GameDTO {
 		Id:         g.Id,
 		PlayerId:   g.PlayerId,
 		OpponentId: g.OpponentId,
-		Starting:   g.determineStartingId(),
+		Starting:   g.DetermineIdOfPlayersTurn(),
 	}
 }
 
-func (g Game) determineStartingId() string {
+func (g Game) DetermineIdOfPlayersTurn() string {
 	if g.TurnCount%2 == 0 {
 		return g.PlayerId
 	}

@@ -34,4 +34,5 @@ func NewEmptyBoard() Board {
 //go:generate mockgen -destination=../mocks/domain/mock_board_repository.go -package=domain -source=board.go BoardRepository
 type BoardRepository interface {
 	Save(Board) (*Board, *errors.AppError)
+	GetByPlayerIdAndGameId(playerId string, gameId string) (*Board, *errors.AppError)
 }

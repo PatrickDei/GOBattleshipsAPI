@@ -35,6 +35,21 @@ func (m *MockBoardRepository) EXPECT() *MockBoardRepositoryMockRecorder {
 	return m.recorder
 }
 
+// GetByPlayerIdAndGameId mocks base method.
+func (m *MockBoardRepository) GetByPlayerIdAndGameId(playerId, gameId string) (*domain.Board, *errors.AppError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByPlayerIdAndGameId", playerId, gameId)
+	ret0, _ := ret[0].(*domain.Board)
+	ret1, _ := ret[1].(*errors.AppError)
+	return ret0, ret1
+}
+
+// GetByPlayerIdAndGameId indicates an expected call of GetByPlayerIdAndGameId.
+func (mr *MockBoardRepositoryMockRecorder) GetByPlayerIdAndGameId(playerId, gameId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByPlayerIdAndGameId", reflect.TypeOf((*MockBoardRepository)(nil).GetByPlayerIdAndGameId), playerId, gameId)
+}
+
 // Save mocks base method.
 func (m *MockBoardRepository) Save(arg0 domain.Board) (*domain.Board, *errors.AppError) {
 	m.ctrl.T.Helper()

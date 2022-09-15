@@ -8,6 +8,7 @@ import (
 //go:generate mockgen -destination=../mocks/service/mock_game_service.go -package=service -source=game_service.go GameService
 type GameService interface {
 	CreateGame(playerId string, opponentId string, playerBoardId string, opponentBoardId string) (*domain.Game, *errors.AppError)
+	GetById(string) (*domain.Game, *errors.AppError)
 }
 
 type GameServiceImpl struct {
@@ -29,6 +30,10 @@ func (gs GameServiceImpl) CreateGame(playerId string, opponentId string, playerB
 	}
 
 	return savedGame, nil
+}
+
+func (gs GameServiceImpl) GetById(id string) (*domain.Game, *errors.AppError) {
+	return gs.repo.GetById(id)
 }
 
 func NewGameService(repo domain.GameRepository) GameService {

@@ -16,12 +16,8 @@ type GameStateDTO struct {
 }
 
 func NewGameStateDTO(playerId string, g domain.Game, b domain.Board) GameStateDTO {
-	var opponentId string
-	if g.PlayerId == playerId {
-		opponentId = g.OpponentId
-	} else {
-		opponentId = g.PlayerId
-	}
+	opponentId := determineOpponentId(playerId, g)
+	gs := determineGameState(g)
 	return GameStateDTO{
 		Player: boardState{
 			PlayerId: playerId,
@@ -31,10 +27,33 @@ func NewGameStateDTO(playerId string, g domain.Game, b domain.Board) GameStateDT
 			PlayerId: opponentId,
 			Board:    domain.NewEmptyBoard().GetFieldsAsSlice(),
 		},
-		Game: gameState{
-			PlayerTurn: g.DetermineIdOfPlayersTurn(),
-		},
+		Game: gs,
 	}
+}
+
+func determineOpponentId(playerId string, g domain.Game) string {
+	var opponentId string
+	if g.PlayerId == playerId {
+		opponentId = g.OpponentId
+	} else {
+		opponentId = g.PlayerId
+	}
+	return opponentId
+}
+
+func determineGameState(g domain.Game) gameState {
+	var gs gameState
+	if g.Status == domain.InProgress {
+		gs = gameState{
+			PlayerTurn: g.DetermineIdOfPlayersTurn(),
+		}
+	} else if g.Status == domain.Finished {
+		gs = gameState{
+			Won: g.DetermineIdOfPlayersTurn(),
+		}
+	}
+
+	return gs
 }
 
 type boardState struct {
@@ -43,5 +62,6 @@ type boardState struct {
 }
 
 type gameState struct {
-	PlayerTurn string `json:"player_turn"`
+	PlayerTurn string `json:"player_turn,omitempty"`
+	Won        string `json:"won,omitempty"`
 }

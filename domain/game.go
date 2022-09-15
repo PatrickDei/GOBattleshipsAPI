@@ -12,6 +12,7 @@ type Game struct {
 	TurnCount       int
 	PlayerBoardId   string
 	OpponentBoardId string
+	Status          int
 }
 
 func (g Game) ToDTO() dto.GameDTO {

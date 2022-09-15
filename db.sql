@@ -27,3 +27,6 @@ ALTER TABLE Games
     ADD COLUMN OpponentBoardId int NOT NULL,
     ADD FOREIGN KEY PlayerBoardFK(PlayerBoardId) REFERENCES Boards(Id),
     ADD FOREIGN KEY OpponentBoardFK(OpponentBoardId) REFERENCES Boards(Id);
+
+ALTER TABLE Games
+    ADD COLUMN Status int NOT NULL;

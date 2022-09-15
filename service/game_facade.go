@@ -71,7 +71,7 @@ func (gf GameFacadeImpl) GetGameStatus(playerId string, gameId string) (*dto.Gam
 		return nil, err
 	}
 
-	resp := dto.NewGameStateDTO(playerId, g, *b)
+	resp := dto.NewGameStateDTO(playerId, *g, *b)
 
 	return &resp, nil
 }

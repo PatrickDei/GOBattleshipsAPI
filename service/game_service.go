@@ -22,6 +22,7 @@ func (gs GameServiceImpl) CreateGame(playerId string, opponentId string, playerB
 		TurnCount:       0,
 		PlayerBoardId:   playerBoardId,
 		OpponentBoardId: opponentBoardId,
+		Status:          domain.InProgress,
 	}
 
 	savedGame, err := gs.repo.Save(g)

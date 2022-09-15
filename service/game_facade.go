@@ -1,6 +1,7 @@
 package service
 
 import (
+	"go-battleships/domain"
 	"go-battleships/dto"
 	"go-battleships/errors"
 )
@@ -8,11 +9,13 @@ import (
 //go:generate mockgen -destination=../mocks/service/mock_game_facade.go -package=service -source=game_facade.go GameFacade
 type GameFacade interface {
 	ChallengeOpponent(playerId string, opponentId string) (*dto.GameDTO, *errors.AppError)
+	GetGameStatus(playerId string, gameId string) (*dto.GameStateDTO, *errors.AppError)
 }
 
 type GameFacadeImpl struct {
 	gameService   GameService
 	playerService PlayerService
+	boardService  BoardService
 }
 
 func (gf GameFacadeImpl) ChallengeOpponent(playerId string, opponentId string) (*dto.GameDTO, *errors.AppError) {
@@ -24,7 +27,17 @@ func (gf GameFacadeImpl) ChallengeOpponent(playerId string, opponentId string) (
 		return nil, err
 	}
 
-	g, err := gf.gameService.CreateGame(playerId, opponentId)
+	playerBoard, err := gf.boardService.CreateNewBoardForPlayer(playerId)
+	if err != nil {
+		return nil, err
+	}
+
+	opponentBoard, err := gf.boardService.CreateNewBoardForPlayer(opponentId)
+	if err != nil {
+		return nil, err
+	}
+
+	g, err := gf.gameService.CreateGame(playerId, opponentId, playerBoard.Id, opponentBoard.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -44,6 +57,26 @@ func (gf GameFacadeImpl) playerExistsById(id string) (bool, *errors.AppError) {
 	return true, nil
 }
 
-func NewGameFacade(s GameService, p PlayerService) GameFacade {
-	return GameFacadeImpl{gameService: s, playerService: p}
+func (gf GameFacadeImpl) GetGameStatus(playerId string, gameId string) (*dto.GameStateDTO, *errors.AppError) {
+	if exists, err := gf.playerExistsById(playerId); exists != true {
+		return nil, err
+	}
+
+	g, err := gf.gameService.GetById(gameId)
+	if err != nil {
+		return nil, err
+	}
+
+	b, err := gf.boardService.GetByPlayerIdAndGameId(playerId, gameId)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := domain.NewGameStateDTO(playerId, *g, *b)
+
+	return &resp, nil
+}
+
+func NewGameFacade(s GameService, p PlayerService, b BoardService) GameFacade {
+	return GameFacadeImpl{gameService: s, playerService: p, boardService: b}
 }

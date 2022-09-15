@@ -36,16 +36,31 @@ func (m *MockGameService) EXPECT() *MockGameServiceMockRecorder {
 }
 
 // CreateGame mocks base method.
-func (m *MockGameService) CreateGame(playerId, opponentId string) (*domain.Game, *errors.AppError) {
+func (m *MockGameService) CreateGame(playerId, opponentId, playerBoardId, opponentBoardId string) (*domain.Game, *errors.AppError) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateGame", playerId, opponentId)
+	ret := m.ctrl.Call(m, "CreateGame", playerId, opponentId, playerBoardId, opponentBoardId)
 	ret0, _ := ret[0].(*domain.Game)
 	ret1, _ := ret[1].(*errors.AppError)
 	return ret0, ret1
 }
 
 // CreateGame indicates an expected call of CreateGame.
-func (mr *MockGameServiceMockRecorder) CreateGame(playerId, opponentId interface{}) *gomock.Call {
+func (mr *MockGameServiceMockRecorder) CreateGame(playerId, opponentId, playerBoardId, opponentBoardId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateGame", reflect.TypeOf((*MockGameService)(nil).CreateGame), playerId, opponentId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateGame", reflect.TypeOf((*MockGameService)(nil).CreateGame), playerId, opponentId, playerBoardId, opponentBoardId)
+}
+
+// GetById mocks base method.
+func (m *MockGameService) GetById(arg0 string) (*domain.Game, *errors.AppError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetById", arg0)
+	ret0, _ := ret[0].(*domain.Game)
+	ret1, _ := ret[1].(*errors.AppError)
+	return ret0, ret1
+}
+
+// GetById indicates an expected call of GetById.
+func (mr *MockGameServiceMockRecorder) GetById(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetById", reflect.TypeOf((*MockGameService)(nil).GetById), arg0)
 }

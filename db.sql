@@ -15,3 +15,25 @@ CREATE TABLE Games (
     FOREIGN KEY (PlayerId) REFERENCES Players(Id),
     FOREIGN KEY (OpponentId) REFERENCES Players(Id)
 );
+
+
+CREATE TABLE Boards (
+    Id int AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    Fields VARCHAR(100) NOT NULL
+);
+
+ALTER TABLE Games
+    ADD COLUMN PlayerBoardId int NOT NULL,
+    ADD COLUMN OpponentBoardId int NOT NULL,
+    ADD FOREIGN KEY PlayerBoardFK(PlayerBoardId) REFERENCES Boards(Id),
+    ADD FOREIGN KEY OpponentBoardFK(OpponentBoardId) REFERENCES Boards(Id);
+
+ALTER TABLE Games
+    ADD COLUMN Status int NOT NULL;
+
+ALTER TABLE Boards
+    ADD COLUMN ShipCount int NOT NULL;
+
+ALTER TABLE Boards
+    ADD COLUMN PlayerId int NOT NULL,
+    ADD FOREIGN KEY PlayerIdFK(PlayerId) REFERENCES Players(Id);

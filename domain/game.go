@@ -24,6 +24,15 @@ func (g Game) ToDTO() dto.GameDTO {
 	}
 }
 
+func (g Game) ToStateDTOForPlayer(playerId string) dto.GameDTO {
+	return dto.GameDTO{
+		Id:         g.Id,
+		PlayerId:   g.PlayerId,
+		OpponentId: g.OpponentId,
+		Status:     g.DetermineStatusForPlayer(playerId),
+	}
+}
+
 func NewGameStateDTO(playerId string, g Game, b Board) dto.GameStateDTO {
 	opponentId := determineOpponentId(playerId, g)
 	gs := determineGameState(g)
@@ -71,6 +80,17 @@ func (g Game) DetermineIdOfPlayersTurn() string {
 		return g.PlayerId
 	}
 	return g.OpponentId
+}
+
+func (g Game) DetermineStatusForPlayer(playerId string) string {
+	if g.Status == InProgress {
+		return NotFinished.String()
+	} else {
+		if g.DetermineIdOfPlayersTurn() == playerId {
+			return Won.String()
+		}
+		return Lost.String()
+	}
 }
 
 //go:generate mockgen -destination=../mocks/domain/mock_game_repository.go -package=domain -source=game.go GameRepository

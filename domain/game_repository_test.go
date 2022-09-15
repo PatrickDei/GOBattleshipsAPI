@@ -31,7 +31,7 @@ func TestSaveReturnsSavedGame(t *testing.T) {
 		TurnCount:  0,
 	}
 
-	mock.ExpectExec("INSERT INTO Games").WillReturnResult(sqlmock.NewResult(lastInsertId, 1))
+	mock.ExpectExec("^INSERT INTO Games").WillReturnResult(sqlmock.NewResult(lastInsertId, 1))
 
 	if savedGame, _ := gr.Save(g); savedGame == nil || savedGame.Id != strconv.FormatInt(lastInsertId, 10) {
 		t.Error("The returned game doesn't contain the last saved Id to db")
@@ -48,7 +48,7 @@ func TestSaveGameReturnsRuntimeError(t *testing.T) {
 		TurnCount:  0,
 	}
 
-	mock.ExpectExec("INSERT INTO Games").WillReturnError(sql.ErrTxDone)
+	mock.ExpectExec("^INSERT INTO Games").WillReturnError(sql.ErrTxDone)
 
 	if _, err := gr.Save(g); err == nil {
 		t.Error("An error occurred when querying the database but it wasn't thrown")

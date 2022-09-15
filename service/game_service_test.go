@@ -69,3 +69,25 @@ func TestCreateGameReturnsError(t *testing.T) {
 		t.Error("Repository returned error but service returned game")
 	}
 }
+
+func TestListByPlayerIdReturnsListOfGames(t *testing.T) {
+	teardown := gameSetup(t)
+	defer teardown()
+
+	mockGameRepo.EXPECT().ListByPlayerId(gomock.Any()).Return([]realdomain.Game{}, nil)
+
+	if g, _ := gs.ListByPlayerId(""); g == nil {
+		t.Error("Repo returned games but service returned nil")
+	}
+}
+
+func TestListByPlayerIdReturnsError(t *testing.T) {
+	teardown := gameSetup(t)
+	defer teardown()
+
+	mockGameRepo.EXPECT().ListByPlayerId(gomock.Any()).Return(nil, errors.NewInternalServerError(errors.NewErrorBody("code", "arg")))
+
+	if _, err := gs.ListByPlayerId(""); err == nil {
+		t.Error("Repo returned error but service didn't")
+	}
+}

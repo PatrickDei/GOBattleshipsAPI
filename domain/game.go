@@ -6,7 +6,7 @@ import (
 )
 
 type Game struct {
-	Id              string
+	Id              string `db:"Id"`
 	PlayerId        string `db:"PlayerId"`
 	OpponentId      string `db:"OpponentId"`
 	TurnCount       int    `db:"TurnCount"`
@@ -77,4 +77,5 @@ func (g Game) DetermineIdOfPlayersTurn() string {
 type GameRepository interface {
 	Save(Game) (*Game, *errors.AppError)
 	GetById(string) (*Game, *errors.AppError)
+	ListByPlayerId(string) ([]Game, *errors.AppError)
 }

@@ -54,3 +54,34 @@ func TestSaveGameReturnsRuntimeError(t *testing.T) {
 		t.Error("An error occurred when querying the database but it wasn't thrown")
 	}
 }
+
+func TestListByPlayerIdReturnsSliceOfGames(t *testing.T) {
+	mock, teardown := gameSetup()
+	defer teardown()
+
+	g := Game{
+		Id:         "1",
+		PlayerId:   "1",
+		OpponentId: "2",
+		Status:     InProgress,
+	}
+
+	mock.ExpectQuery("^SELECT Id, PlayerId, OpponentId, Status FROM Games WHERE").WillReturnRows(
+		sqlmock.NewRows(
+			[]string{"Id", "PlayerId", "OpponentId", "Status"}).AddRow(g.Id, g.PlayerId, g.OpponentId, g.Status))
+
+	if g, _ := gr.ListByPlayerId(""); len(g) == 0 {
+		t.Error("Db returned rows but repository returned an empty slice")
+	}
+}
+
+func TestListByPlayerIdReturnsError(t *testing.T) {
+	mock, teardown := gameSetup()
+	defer teardown()
+
+	mock.ExpectQuery("^SELECT Id, PlayerId, OpponentId, Status FROM Games WHERE").WillReturnError(sql.ErrTxDone)
+
+	if _, err := gr.ListByPlayerId(""); err == nil {
+		t.Error("Db returned error but repository didn't")
+	}
+}

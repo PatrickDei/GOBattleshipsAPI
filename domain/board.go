@@ -28,7 +28,7 @@ func (b Board) GetFieldsAsSlice() []string {
 }
 
 func NewEmptyBoard() Board {
-	return Board{Fields: strings.Repeat(strings.Repeat(".", BoardColumnCount), BoardRowCount)}
+	return Board{Fields: strings.Repeat(strings.Repeat(Unpopulated.String(), BoardColumnCount), BoardRowCount)}
 }
 
 //go:generate mockgen -destination=../mocks/domain/mock_board_repository.go -package=domain -source=board.go BoardRepository

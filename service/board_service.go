@@ -16,8 +16,7 @@ type BoardServiceImpl struct {
 }
 
 func (bs BoardServiceImpl) CreateNewBoard() (*domain.Board, *errors.AppError) {
-	b := domain.NewEmptyBoard()
-	bs.boardFactory.PopulateBoard(&b)
+	b := bs.boardFactory.GenerateNewBoard()
 
 	board, err := bs.repo.Save(b)
 	if err != nil {

@@ -8,7 +8,7 @@ import (
 
 //go:generate mockgen -destination=../mocks/domain/mock_board_factory.go -package=domain -source=board_factory.go BoardFactory
 type BoardFactory interface {
-	PopulateBoard(*Board)
+	GenerateNewBoard() Board
 
 	PlacePatrolCraft(*Board) Ship
 	PlaceSubmarine(*Board) Ship
@@ -23,22 +23,25 @@ const battleshipAmount = 1
 
 type BoardFactoryImpl struct{}
 
-func (bf BoardFactoryImpl) PopulateBoard(b *Board) {
+func (bf BoardFactoryImpl) GenerateNewBoard() Board {
+	b := NewEmptyBoard()
 	ships := make([]Ship, 0)
 	for i := 0; i < battleshipAmount; i++ {
-		ships = append(ships, bf.PlaceBattleship(b))
+		ships = append(ships, bf.PlaceBattleship(&b))
 	}
 	for i := 0; i < destroyerAmount; i++ {
-		ships = append(ships, bf.PlaceDestroyer(b))
+		ships = append(ships, bf.PlaceDestroyer(&b))
 	}
 	for i := 0; i < submarineAmount; i++ {
-		ships = append(ships, bf.PlaceSubmarine(b))
+		ships = append(ships, bf.PlaceSubmarine(&b))
 	}
 	for i := 0; i < patrolCraftAmount; i++ {
-		ships = append(ships, bf.PlacePatrolCraft(b))
+		ships = append(ships, bf.PlacePatrolCraft(&b))
 	}
 
 	b.ShipCount = len(ships)
+
+	return b
 }
 
 func (bf BoardFactoryImpl) PlacePatrolCraft(b *Board) Ship {
@@ -127,35 +130,35 @@ func (bf BoardFactoryImpl) areSpotsAroundPointTaken(b *Board, row int, col int) 
 		bf.isBelowTaken(b, row, col) ||
 		bf.isLeftTaken(b, row, col) ||
 		bf.isRightTaken(b, row, col) ||
-		string(b.GetFieldsAsSlice()[row][col]) != "."
+		string(b.GetFieldsAsSlice()[row][col]) != Unpopulated.String()
 }
 
 func (bf BoardFactoryImpl) isAboveTaken(b *Board, row int, col int) bool {
 	if row == 0 {
 		return false
 	}
-	return string(b.GetFieldsAsSlice()[row-1][col]) != "." // todo make enum
+	return string(b.GetFieldsAsSlice()[row-1][col]) != Unpopulated.String()
 }
 
 func (bf BoardFactoryImpl) isBelowTaken(b *Board, row int, col int) bool {
 	if row == BoardRowCount-1 {
 		return false
 	}
-	return string(b.GetFieldsAsSlice()[row+1][col]) != "." // todo make enum
+	return string(b.GetFieldsAsSlice()[row+1][col]) != Unpopulated.String()
 }
 
 func (bf BoardFactoryImpl) isLeftTaken(b *Board, row int, col int) bool {
 	if col == 0 {
 		return false
 	}
-	return string(b.GetFieldsAsSlice()[row][col-1]) != "." // todo make enum
+	return string(b.GetFieldsAsSlice()[row][col-1]) != Unpopulated.String()
 }
 
 func (bf BoardFactoryImpl) isRightTaken(b *Board, row int, col int) bool {
 	if col == BoardColumnCount-1 {
 		return false
 	}
-	return string(b.GetFieldsAsSlice()[row][col+1]) != "." // todo make enum
+	return string(b.GetFieldsAsSlice()[row][col+1]) != Unpopulated.String()
 }
 
 func (bf BoardFactoryImpl) placeShipOnBoard(b *Board, s *Ship) {
@@ -164,11 +167,11 @@ func (bf BoardFactoryImpl) placeShipOnBoard(b *Board, s *Ship) {
 	for i := 0; i < s.Size; i++ {
 		if s.IsHorizontal {
 			row := []rune(strings.Clone(rows[s.Row]))
-			row[s.Column+i] = '#'
+			row[s.Column+i] = Taken.Rune()
 			rows[s.Row] = string(row)
 		} else {
 			row := []rune(strings.Clone(rows[s.Row+i]))
-			row[s.Column] = '#'
+			row[s.Column] = Taken.Rune()
 			rows[s.Row+i] = string(row)
 		}
 	}

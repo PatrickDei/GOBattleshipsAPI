@@ -32,7 +32,7 @@ func TestCreateNewBoardReturnsCreatedBoard(t *testing.T) {
 	boardWithId := b
 	boardWithId.Id = "1"
 
-	mockBoardFactory.EXPECT().PopulateBoard(&b)
+	mockBoardFactory.EXPECT().GenerateNewBoard().Return(b)
 	mockBoardRepo.EXPECT().Save(b).Return(&boardWithId, nil)
 
 	if board, err := bs.CreateNewBoard(); board == nil || err != nil {
@@ -46,7 +46,7 @@ func TestCreateNewBoardReturnsError(t *testing.T) {
 
 	b := realdomain.NewEmptyBoard()
 
-	mockBoardFactory.EXPECT().PopulateBoard(&b)
+	mockBoardFactory.EXPECT().GenerateNewBoard().Return(b)
 	mockBoardRepo.EXPECT().Save(b).Return(nil, errors.NewInternalServerError(errors.NewErrorBody("code", "arg")))
 
 	if _, err := bs.CreateNewBoard(); err == nil {

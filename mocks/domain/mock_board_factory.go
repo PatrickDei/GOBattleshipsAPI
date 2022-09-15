@@ -34,6 +34,20 @@ func (m *MockBoardFactory) EXPECT() *MockBoardFactoryMockRecorder {
 	return m.recorder
 }
 
+// GenerateNewBoard mocks base method.
+func (m *MockBoardFactory) GenerateNewBoard() domain.Board {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GenerateNewBoard")
+	ret0, _ := ret[0].(domain.Board)
+	return ret0
+}
+
+// GenerateNewBoard indicates an expected call of GenerateNewBoard.
+func (mr *MockBoardFactoryMockRecorder) GenerateNewBoard() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateNewBoard", reflect.TypeOf((*MockBoardFactory)(nil).GenerateNewBoard))
+}
+
 // PlaceBattleship mocks base method.
 func (m *MockBoardFactory) PlaceBattleship(arg0 *domain.Board) domain.Ship {
 	m.ctrl.T.Helper()
@@ -88,16 +102,4 @@ func (m *MockBoardFactory) PlaceSubmarine(arg0 *domain.Board) domain.Ship {
 func (mr *MockBoardFactoryMockRecorder) PlaceSubmarine(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PlaceSubmarine", reflect.TypeOf((*MockBoardFactory)(nil).PlaceSubmarine), arg0)
-}
-
-// PopulateBoard mocks base method.
-func (m *MockBoardFactory) PopulateBoard(arg0 *domain.Board) {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "PopulateBoard", arg0)
-}
-
-// PopulateBoard indicates an expected call of PopulateBoard.
-func (mr *MockBoardFactoryMockRecorder) PopulateBoard(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PopulateBoard", reflect.TypeOf((*MockBoardFactory)(nil).PopulateBoard), arg0)
 }

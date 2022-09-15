@@ -33,7 +33,7 @@ func (br BoardRepositoryImpl) GetByPlayerIdAndGameId(playerId string, gameId str
 	var b Board
 	err := br.dbClient.Get(&b, selectStatement, gameId, playerId, playerId)
 	if err != nil {
-		logger.Error("Error while reading board")
+		logger.Error(err.Error())
 		return nil, errors.NewInternalServerError(errors.NewErrorBody("error.db", "Error while reading board"))
 	}
 

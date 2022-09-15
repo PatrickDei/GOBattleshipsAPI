@@ -29,13 +29,13 @@ func (gr GameRepositoryImpl) Save(g Game) (*Game, *errors.AppError) {
 }
 
 func (gr GameRepositoryImpl) GetById(id string) (*Game, *errors.AppError) {
-	selectStatement := "SELECT PlayerId, OpponentId, TurnCount FROM Games WHERE Id = ?"
+	selectStatement := "SELECT PlayerId, OpponentId, TurnCount, Status FROM Games WHERE Id = ?"
 
 	var g Game
 	err := gr.dbClient.Get(&g, selectStatement, id)
 	if err != nil {
 		if err != sql.ErrNoRows {
-			logger.Error("Error while reading game")
+			logger.Error(err.Error())
 			return nil, errors.NewInternalServerError(errors.NewErrorBody("error.db", "Error while reading game"))
 		} else {
 			return nil, errors.NewNotFoundError(errors.NewErrorBody("unknown-game-id", id))

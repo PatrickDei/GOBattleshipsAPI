@@ -60,6 +60,7 @@ func TestChallengeOpponentReturnsGame(t *testing.T) {
 
 	playerId := "1"
 	opponentId := "2"
+	boardId := "1"
 	g := domain.Game{
 		Id:         "1",
 		PlayerId:   playerId,
@@ -67,12 +68,12 @@ func TestChallengeOpponentReturnsGame(t *testing.T) {
 		TurnCount:  0,
 	}
 	b := domain.NewEmptyBoard()
-	b.Id = "1"
+	b.Id = boardId
 
 	mockPlayerService.EXPECT().ExistsById(playerId).Return(true, nil)
 	mockPlayerService.EXPECT().ExistsById(opponentId).Return(true, nil)
 	mockBoardService.EXPECT().CreateNewBoard().Return(&b, nil).Times(2)
-	mockGameService.EXPECT().CreateGame(playerId, opponentId).Return(&g, nil)
+	mockGameService.EXPECT().CreateGame(playerId, opponentId, boardId, boardId).Return(&g, nil)
 
 	if game, err := gf.ChallengeOpponent(playerId, opponentId); err != nil || game == nil {
 		t.Error("Service returned game but facade didn't")
@@ -85,13 +86,14 @@ func TestChallengeOpponentReturnsRuntimeError(t *testing.T) {
 
 	playerId := "1"
 	opponentId := "2"
+	boardId := "1"
 	b := domain.NewEmptyBoard()
-	b.Id = "1"
+	b.Id = boardId
 
 	mockPlayerService.EXPECT().ExistsById(playerId).Return(true, nil)
 	mockPlayerService.EXPECT().ExistsById(opponentId).Return(true, nil)
 	mockBoardService.EXPECT().CreateNewBoard().Return(&b, nil).Times(2)
-	mockGameService.EXPECT().CreateGame(playerId, opponentId).Return(nil, errors.NewInternalServerError(errors.NewErrorBody("code", "arg")))
+	mockGameService.EXPECT().CreateGame(playerId, opponentId, boardId, boardId).Return(nil, errors.NewInternalServerError(errors.NewErrorBody("code", "arg")))
 
 	if _, err := gf.ChallengeOpponent(playerId, opponentId); err == nil {
 		t.Error("Service returned error but facade didn't")

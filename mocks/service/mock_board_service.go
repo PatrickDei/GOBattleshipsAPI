@@ -49,3 +49,18 @@ func (mr *MockBoardServiceMockRecorder) CreateNewBoard() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateNewBoard", reflect.TypeOf((*MockBoardService)(nil).CreateNewBoard))
 }
+
+// GetByPlayerIdAndGameId mocks base method.
+func (m *MockBoardService) GetByPlayerIdAndGameId(playerId, gameId string) (*domain.Board, *errors.AppError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByPlayerIdAndGameId", playerId, gameId)
+	ret0, _ := ret[0].(*domain.Board)
+	ret1, _ := ret[1].(*errors.AppError)
+	return ret0, ret1
+}
+
+// GetByPlayerIdAndGameId indicates an expected call of GetByPlayerIdAndGameId.
+func (mr *MockBoardServiceMockRecorder) GetByPlayerIdAndGameId(playerId, gameId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByPlayerIdAndGameId", reflect.TypeOf((*MockBoardService)(nil).GetByPlayerIdAndGameId), playerId, gameId)
+}

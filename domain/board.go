@@ -9,8 +9,8 @@ const BoardColumnCount = 10
 const BoardRowCount = 10
 
 type Board struct {
-	Id        string
-	Fields    string
+	Id        string `db:"Id"`
+	Fields    string `db:"Fields"`
 	ShipCount int
 }
 

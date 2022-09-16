@@ -6,7 +6,7 @@ import (
 )
 
 type Game struct {
-	Id              string
+	Id              string `db:"Id"`
 	PlayerId        string `db:"PlayerId"`
 	OpponentId      string `db:"OpponentId"`
 	TurnCount       int    `db:"TurnCount"`
@@ -21,6 +21,14 @@ func (g Game) ToDTO() dto.GameDTO {
 		PlayerId:   g.PlayerId,
 		OpponentId: g.OpponentId,
 		Starting:   g.DetermineIdOfPlayersTurn(),
+	}
+}
+
+func (g Game) ToStateDTOForPlayer(playerId string) dto.GameDTO {
+	return dto.GameDTO{
+		Id:         g.Id,
+		OpponentId: g.OpponentId,
+		Status:     g.DetermineStatusForPlayer(playerId),
 	}
 }
 
@@ -73,8 +81,24 @@ func (g Game) DetermineIdOfPlayersTurn() string {
 	return g.OpponentId
 }
 
+func (g Game) DetermineStatusForPlayer(playerId string) string {
+	if g.Status == InProgress {
+		return NotFinished.String()
+	} else {
+		return g.determineOutcomeForPlayer(playerId)
+	}
+}
+
+func (g Game) determineOutcomeForPlayer(playerId string) string {
+	if g.DetermineIdOfPlayersTurn() == playerId {
+		return Won.String()
+	}
+	return Lost.String()
+}
+
 //go:generate mockgen -destination=../mocks/domain/mock_game_repository.go -package=domain -source=game.go GameRepository
 type GameRepository interface {
 	Save(Game) (*Game, *errors.AppError)
 	GetById(string) (*Game, *errors.AppError)
+	ListByPlayerId(string) ([]Game, *errors.AppError)
 }

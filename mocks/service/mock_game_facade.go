@@ -64,3 +64,18 @@ func (mr *MockGameFacadeMockRecorder) GetGameStatus(playerId, gameId interface{}
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGameStatus", reflect.TypeOf((*MockGameFacade)(nil).GetGameStatus), playerId, gameId)
 }
+
+// ListPlayersGames mocks base method.
+func (m *MockGameFacade) ListPlayersGames(playerId string) ([]dto.GameDTO, *errors.AppError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListPlayersGames", playerId)
+	ret0, _ := ret[0].([]dto.GameDTO)
+	ret1, _ := ret[1].(*errors.AppError)
+	return ret0, ret1
+}
+
+// ListPlayersGames indicates an expected call of ListPlayersGames.
+func (mr *MockGameFacadeMockRecorder) ListPlayersGames(playerId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPlayersGames", reflect.TypeOf((*MockGameFacade)(nil).ListPlayersGames), playerId)
+}

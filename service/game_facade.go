@@ -10,6 +10,7 @@ import (
 type GameFacade interface {
 	ChallengeOpponent(playerId string, opponentId string) (*dto.GameDTO, *errors.AppError)
 	GetGameStatus(playerId string, gameId string) (*dto.GameStateDTO, *errors.AppError)
+	ListPlayersGames(playerId string) ([]dto.GameDTO, *errors.AppError)
 }
 
 type GameFacadeImpl struct {
@@ -75,6 +76,24 @@ func (gf GameFacadeImpl) GetGameStatus(playerId string, gameId string) (*dto.Gam
 	resp := domain.NewGameStateDTO(playerId, *g, *b)
 
 	return &resp, nil
+}
+
+func (gf GameFacadeImpl) ListPlayersGames(playerId string) ([]dto.GameDTO, *errors.AppError) {
+	if exists, err := gf.playerExistsById(playerId); exists != true {
+		return nil, err
+	}
+
+	games, err := gf.gameService.ListByPlayerId(playerId)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make([]dto.GameDTO, 0)
+	for _, g := range games {
+		resp = append(resp, g.ToStateDTOForPlayer(playerId))
+	}
+
+	return resp, nil
 }
 
 func NewGameFacade(s GameService, p PlayerService, b BoardService) GameFacade {

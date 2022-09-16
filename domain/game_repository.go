@@ -45,6 +45,19 @@ func (gr GameRepositoryImpl) GetById(id string) (*Game, *errors.AppError) {
 	return &g, nil
 }
 
+func (gr GameRepositoryImpl) ListByPlayerId(playerId string) ([]Game, *errors.AppError) {
+	selectStatement := "SELECT Id, PlayerId, OpponentId, Status FROM Games WHERE PlayerId = ? OR OpponentId = ?"
+
+	g := make([]Game, 0)
+	err := gr.dbClient.Select(&g, selectStatement, playerId, playerId)
+	if err != nil {
+		logger.Error(err.Error())
+		return nil, errors.NewInternalServerError(errors.NewErrorBody("error.db", "Error while reading players games"))
+	}
+
+	return g, nil
+}
+
 func NewGameRepository(dbClient *sqlx.DB) GameRepository {
 	return GameRepositoryImpl{dbClient: dbClient}
 }

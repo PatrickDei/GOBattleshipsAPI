@@ -29,6 +29,7 @@ func gameSetup(t *testing.T) func() {
 
 	r = mux.NewRouter()
 	r.HandleFunc("/player/{"+OpponentPathParam+"}/game", gh.ChallengePlayer).Methods(http.MethodPost)
+	r.HandleFunc("/player/{"+OpponentPathParam+"}/game/list", gh.GetGamesForPlayer).Methods(http.MethodGet)
 
 	return func() {
 		r = nil
@@ -92,5 +93,57 @@ func TestChallengePlayerShouldReturnNotFoundWhenPlayerDoesntExist(t *testing.T) 
 	}
 	if _, ok := body.Body[errors.ErrorBodyErrorArg]; ok {
 		t.Error("Didn't return an error argument")
+	}
+}
+
+func TestGetGamesForPlayerReturnsNoContentIfThereAreNoGames(t *testing.T) {
+	teardown := gameSetup(t)
+	defer teardown()
+
+	mockFacade.EXPECT().ListPlayersGames(gomock.Any()).Return([]dto.GameDTO{}, nil)
+
+	request, _ := http.NewRequest(http.MethodGet, "/player/1/game/list", nil)
+
+	recorder := httptest.NewRecorder()
+	r.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusNoContent {
+		t.Error("Didn't return 204 No Content")
+	}
+}
+
+func TestGetGamesForPlayerReturnsError(t *testing.T) {
+	teardown := gameSetup(t)
+	defer teardown()
+
+	mockFacade.EXPECT().ListPlayersGames(gomock.Any()).Return(nil, errors.NewNotFoundError(errors.NewErrorBody("code", "arg")))
+
+	request, _ := http.NewRequest(http.MethodGet, "/player/1/game/list", nil)
+
+	recorder := httptest.NewRecorder()
+	r.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusNotFound {
+		t.Error("Didn't return 404 Not Found")
+	}
+}
+
+func TestGetGamesForPlayerReturnsGames(t *testing.T) {
+	teardown := gameSetup(t)
+	defer teardown()
+
+	mockFacade.EXPECT().ListPlayersGames(gomock.Any()).Return([]dto.GameDTO{{}, {}}, nil)
+
+	request, _ := http.NewRequest(http.MethodGet, "/player/1/game/list", nil)
+
+	recorder := httptest.NewRecorder()
+	r.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Error("Didn't return 200 OK")
+	}
+
+	if recorder.Body == nil {
+		t.Error("Didn't return a body")
 	}
 }

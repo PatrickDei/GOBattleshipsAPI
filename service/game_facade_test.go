@@ -154,3 +154,42 @@ func TestGetGameStatusReturnsGameState(t *testing.T) {
 		t.Error("Facade didn't return any game state")
 	}
 }
+
+func TestListPlayersByGameReturnsNotFound(t *testing.T) {
+	teardown := gameFacadeSetup(t)
+	defer teardown()
+
+	mockPlayerService.EXPECT().ExistsById(gomock.Any()).Return(false, nil)
+
+	if _, err := gf.ListPlayersGames(""); err == nil {
+		t.Error("Service returned error but facade didn't")
+	}
+}
+
+func TestListPlayersByGameReturnsError(t *testing.T) {
+	teardown := gameFacadeSetup(t)
+	defer teardown()
+
+	mockPlayerService.EXPECT().ExistsById(gomock.Any()).Return(true, nil)
+	mockGameService.EXPECT().ListByPlayerId(gomock.Any()).Return(nil, errors.NewInternalServerError(errors.NewErrorBody("code", "err")))
+
+	if _, err := gf.ListPlayersGames(""); err == nil {
+		t.Error("Service returned error but facade didn't")
+	}
+}
+
+func TestListPlayersByGameReturnsListOfGames(t *testing.T) {
+	teardown := gameFacadeSetup(t)
+	defer teardown()
+
+	g := []domain.Game{
+		{}, {},
+	}
+
+	mockPlayerService.EXPECT().ExistsById(gomock.Any()).Return(true, nil)
+	mockGameService.EXPECT().ListByPlayerId(gomock.Any()).Return(g, nil)
+
+	if games, _ := gf.ListPlayersGames(""); len(games) == 0 {
+		t.Error("Service returned games but facade didn't")
+	}
+}

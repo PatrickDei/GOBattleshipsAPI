@@ -50,6 +50,21 @@ func (mr *MockGameRepositoryMockRecorder) GetById(arg0 interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetById", reflect.TypeOf((*MockGameRepository)(nil).GetById), arg0)
 }
 
+// ListByPlayerId mocks base method.
+func (m *MockGameRepository) ListByPlayerId(arg0 string) ([]domain.Game, *errors.AppError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListByPlayerId", arg0)
+	ret0, _ := ret[0].([]domain.Game)
+	ret1, _ := ret[1].(*errors.AppError)
+	return ret0, ret1
+}
+
+// ListByPlayerId indicates an expected call of ListByPlayerId.
+func (mr *MockGameRepositoryMockRecorder) ListByPlayerId(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByPlayerId", reflect.TypeOf((*MockGameRepository)(nil).ListByPlayerId), arg0)
+}
+
 // Save mocks base method.
 func (m *MockGameRepository) Save(arg0 domain.Game) (*domain.Game, *errors.AppError) {
 	m.ctrl.T.Helper()

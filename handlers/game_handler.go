@@ -44,6 +44,22 @@ func (gh GameHandler) GetGameState(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		writeResponse(w, err.Code, err.AsResponseMessage())
 	} else {
-		writeResponse(w, http.StatusCreated, gs)
+		writeResponse(w, http.StatusOK, gs)
+	}
+}
+
+func (gh GameHandler) GetGamesForPlayer(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	playerId := vars[PlayerPathParam]
+
+	g, err := gh.Facade.ListPlayersGames(playerId)
+	if err != nil {
+		writeResponse(w, err.Code, err.AsResponseMessage())
+	} else {
+		if len(g) == 0 {
+			writeResponse(w, http.StatusNoContent, g)
+		} else {
+			writeResponse(w, http.StatusOK, g)
+		}
 	}
 }

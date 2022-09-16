@@ -3,6 +3,6 @@ package domain
 type GameStatus int
 
 const (
-	InProgress = iota
+	InProgress GameStatus = iota
 	Finished
 )

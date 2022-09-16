@@ -37,6 +37,7 @@ func Start() {
 	router.HandleFunc("/player/{"+handlers.PlayerPathParam+"}", ph.GetPlayer).Methods(http.MethodGet)
 
 	router.HandleFunc("/player/{"+handlers.OpponentPathParam+"}/game", gh.ChallengePlayer).Methods(http.MethodPost)
+	router.HandleFunc("/player/{"+handlers.PlayerPathParam+"}/game/list", gh.GetGamesForPlayer).Methods(http.MethodGet)
 	router.HandleFunc("/player/{"+handlers.PlayerPathParam+"}/game/{"+handlers.GamePathParam+"}", gh.GetGameState).Methods(http.MethodGet)
 
 	address := os.Getenv(constants.ServerAddressEnv)

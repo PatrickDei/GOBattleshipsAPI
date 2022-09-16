@@ -85,11 +85,15 @@ func (g Game) DetermineStatusForPlayer(playerId string) string {
 	if g.Status == InProgress {
 		return NotFinished.String()
 	} else {
-		if g.DetermineIdOfPlayersTurn() == playerId {
-			return Won.String()
-		}
-		return Lost.String()
+		return g.determineOutcomeForPlayer(playerId)
 	}
+}
+
+func (g Game) determineOutcomeForPlayer(playerId string) string {
+	if g.DetermineIdOfPlayersTurn() == playerId {
+		return Won.String()
+	}
+	return Lost.String()
 }
 
 //go:generate mockgen -destination=../mocks/domain/mock_game_repository.go -package=domain -source=game.go GameRepository
